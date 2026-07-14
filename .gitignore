@@ -1,0 +1,97 @@
+# ---- Python ----
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# ---- Virtual environments ----
+.venv
+venv/
+ENV/
+
+# ---- Vendored SALMONN model code (fetched via scripts/setup_salmonn.sh) ----
+# It is a separate upstream git repo (bytedance/SALMONN) with its own .git and
+# multi-GB .venv. Never commit it into this repo (it would become a broken
+# gitlink). Only our integration files under salmonn_sqa/ are tracked.
+/salmonn_sqa/SALMONN/
+
+# ---- Model weights / checkpoints (large, downloaded, never in git) ----
+/salmonn_sqa/models/
+/salmonn_sqa/ckpt/
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+
+# ---- Datasets & audio samples (regenerable / external) ----
+/noisy_testset_wav/
+/noisy_testset_wav_16k/
+/test_audio_samples/
+*.wav
+*.mp3
+*.flac
+
+# ---- MLflow tracking store (regenerable; embeds absolute paths) ----
+/mlruns/
+mlartifacts/
+
+# ---- Misc ----
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.swp
+experiments/NISQA/
+experiments/.deckenv/
+experiments/work/          # scratch audio (was /tmp/*); regenerable
+
+# ---- Experiment results ----
+# Ignore the directory by default, then allow-list the small artifacts that make the
+# repo reproducible: plots, the v3 corpora + paraphrase pool, eval outputs, writeups.
+# The heavy/derived things (checkpoints, generated WAVs, manifests with absolute paths,
+# run logs, superseded v1/v2 corpora) stay out — see REPRODUCING.md.
+experiments/results/**
+!experiments/results/
+!experiments/results/planb/
+
+# plots
+!experiments/results/*.png
+!experiments/results/planb/*.png
+# the slide deck
+!experiments/results/planb_deck.html
+!experiments/results/planb_deck.pptx
+!experiments/results/planb_deck.pdf
+# the v3 corpora (the actual training targets) + the LLM paraphrase cache (720 Opus calls)
+!experiments/results/planb/corpus_train_v3.jsonl
+!experiments/results/planb/corpus_val_v3.jsonl
+!experiments/results/planb/corpus_dev.jsonl
+!experiments/results/planb/paraphrase_pool.json
+# eval outputs -> let anyone re-run the analysis/plots with no GPU
+!experiments/results/*.jsonl
+!experiments/results/planb/*.jsonl
+!experiments/results/*.csv
+!experiments/results/planb/*.csv
+# writeups
+!experiments/results/*.md
+!experiments/results/planb/*.md
+
+# ...but never these, even though the globs above would match them:
+experiments/results/planb/corpus_train.jsonl
+experiments/results/planb/corpus_val.jsonl
+experiments/results/planb/corpus_train_v2.jsonl
+experiments/results/planb/corpus_val_v2.jsonl
+experiments/results/planb/corpus_train_v3pre.jsonl
+experiments/results/planb/corpus_val_v3pre.jsonl
+experiments/results/planb/*smoke*.jsonl
+experiments/results/planb/dryrun.jsonl
+experiments/results/*smoke*.jsonl
+
+# secrets (never commit)
+.anthropic_key
+.secrets/
+*.key
+.env
+GPU_SCALING_CASE.md

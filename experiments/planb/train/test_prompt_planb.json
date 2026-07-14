@@ -1,0 +1,4 @@
+{
+    "sqa_score": "<Speech><SpeechHere></Speech> Rate this speech recording on each quality dimension from 1 (very bad) to 5 (excellent): noise, reverberation, bandwidth, clipping, discontinuity, loudness.",
+    "sqa_full": "<Speech><SpeechHere></Speech> Assess the quality of this speech recording. First rate each dimension from 1 (very bad) to 5 (excellent): noise, reverberation, bandwidth, clipping, discontinuity, loudness. Then describe the main problems you hear in 1-3 sentences. Finally give an overall MOS from 1.00 to 5.00."
+}

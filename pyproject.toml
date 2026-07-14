@@ -1,0 +1,100 @@
+[project]
+name = "sqa"
+version = "0.1.0"
+description = "Descriptive speech quality assessment with the SALMONN audio LLM"
+readme = "README.md"
+requires-python = ">=3.12"
+
+# Runtime deps for the SALMONN model + the batch SQA pipeline. These mirror the
+# vendored SALMONN requirements (they run in this same interpreter) plus MLflow.
+dependencies = [
+    "torch==2.2.0",
+    "torchaudio==2.2.0",
+    "transformers==4.35.0",
+    "peft==0.4.0",
+    "accelerate==0.23.0",
+    "bitsandbytes==0.41.0",
+    "sentencepiece",
+    "soundfile",
+    "librosa",
+    "omegaconf",
+    "huggingface-hub>=0.16.4,<0.18",
+    "protobuf",
+    "setuptools",
+    "numpy",
+    "tqdm",
+    "pandas",
+    # matplotlib lives in the base deps (not the `viz` extra): both the introspection
+    # tools and every experiment analysis/plot script import it. It used to be pinned
+    # to 3.7.2 under `viz`, which conflicted with the >=3.10 the experiments run on.
+    "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+# MLflow experiment tracking for the batch/serving tools (batch_process_sqa.py,
+# introspect_one.py, api_inference.py, demo_mlflow.py).
+#
+# NOTE: mlflow 2.9.2 pins pyarrow<15, which is incompatible with the pyarrow the
+# research pipeline needs. Nothing under experiments/ (or salmonn_core.py) imports
+# mlflow, so it is deliberately NOT a base dependency — keeping it out is what lets
+# the `experiments` extra resolve at all.
+tracking = [
+    "mlflow==2.9.2",
+]
+# FastAPI serving layer (api_inference.py, client_example.py).
+# api_inference.py also logs to MLflow -> install with `--extra api --extra tracking`.
+api = [
+    "fastapi==0.104.1",
+    "uvicorn[standard]==0.24.0",
+    "python-multipart==0.0.6",
+    "pydantic==2.5.0",
+    "requests",
+]
+# Introspection visualizations (model_introspection.py, visualization_utils.py).
+viz = [
+    "seaborn>=0.12",
+]
+# Everything the research pipeline needs on top of the model runtime: objective
+# metrics (pesq/pystoi/speechmos), the ConvFSENet ONNX enhancer, parquet reading,
+# the Claude paraphrase step, and the training logger.
+#
+# NOTE: deliberately does NOT include `datasets`. It conflicts with the pyarrow that
+# the rest of the stack needs (datasets 2.14 vs pyarrow >=15) and we never need it —
+# the VoiceBank-DEMAND parquet is read directly with pyarrow (see experiments/config.py).
+experiments = [
+    "pesq>=0.0.4",
+    "pystoi>=0.4",
+    "speechmos>=0.0.1",
+    "onnxruntime>=1.16",
+    "pyarrow>=15",
+    "scipy>=1.11",
+    "anthropic>=0.40",
+    "tensorboardX>=2.6",
+]
+# Slide-deck builder (experiments/build_deck.py -> planb_deck.pptx / .pdf).
+deck = [
+    "python-pptx>=1.0",
+    "pillow>=10",
+]
+dev = [
+    "pytest",
+    "ruff",
+    "httpx",
+]
+
+[tool.uv]
+# requirements-api.txt is generated from this file for the Docker build only:
+#   uv export --no-hashes --extra api --extra tracking --extra viz -o requirements-api.txt
+package = false
+
+# `tracking` (mlflow 2.9.2, which pins pyarrow<15) and `experiments` (needs pyarrow>=15)
+# genuinely cannot coexist. Declaring the conflict lets uv build a valid universal lock
+# and install either environment on demand, instead of failing to resolve at all:
+#
+#   research/eval:  uv sync --extra experiments
+#   serving:        uv sync --extra api --extra tracking
+#
+# Nothing under experiments/ imports mlflow, so the research path loses nothing.
+conflicts = [
+    [{ extra = "tracking" }, { extra = "experiments" }],
+]

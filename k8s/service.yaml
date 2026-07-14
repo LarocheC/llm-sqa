@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: salmonn-sqa-api
+  labels:
+    app: salmonn-sqa-api
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: salmonn-sqa-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: salmonn-sqa-api-internal
+  labels:
+    app: salmonn-sqa-api
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: salmonn-sqa-api

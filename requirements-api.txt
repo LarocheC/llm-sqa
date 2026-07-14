@@ -1,0 +1,31 @@
+# Core SALMONN dependencies
+torch==2.2.0
+torchaudio==2.2.0
+peft==0.4.0
+soundfile
+librosa
+transformers==4.35.0
+sentencepiece
+accelerate==0.23.0
+bitsandbytes==0.41.0
+huggingface-hub>=0.16.4,<0.18
+omegaconf
+setuptools
+protobuf
+
+# API dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+pydantic==2.5.0
+
+# MLflow for experiment tracking
+mlflow==2.9.2
+pandas
+
+# Visualization for model introspection
+matplotlib==3.7.2
+seaborn==0.12.2
+
+# Optional: for production deployment
+gunicorn==21.2.0

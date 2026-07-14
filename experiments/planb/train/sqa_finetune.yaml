@@ -1,0 +1,72 @@
+# Plan B two-stage LoRA-SFT config for de-specializing SALMONN-SQA.
+# Model paths resolve from $SQA_ROOT (= the sqa repo root; export it before running,
+# the run_finetune.sh script does this). Per-stage values (ckpt, ann paths,
+# output_dir, max_epoch) are overridden on the command line via --options.
+model:
+  llama_path: "${oc.env:SQA_ROOT}/salmonn_sqa/models/vicuna-7b-v1_5"
+  whisper_path: "${oc.env:SQA_ROOT}/salmonn_sqa/models/whisper-large-v2"
+  beats_path: "${oc.env:SQA_ROOT}/salmonn_sqa/models/BEATs_iter3_plus_AS2M_finetuned_on_AS2M_cpt2.pt"
+  # Stage 1 continues from the released SQA checkpoint; Stage 2 overrides this with
+  # the Stage 1 best checkpoint (strict=False load merges the trainable params).
+  ckpt: "${oc.env:SQA_ROOT}/salmonn_sqa/ckpt/finetuned_SALMONN_7B_2.pth"
+
+  # Stage 0 proved the degradation signal is in the frozen features -> encoders stay
+  # frozen; only Q-Former + projection + Vicuna-LoRA train (the original recipe).
+  freeze_whisper: True
+  freeze_beats: True
+
+  use_speech_Qformer: True
+  freeze_speech_QFormer: False
+  window_level_Qformer: True
+  num_speech_query_token: 1
+  second_per_window: 0.333333
+  second_stride: 0.333333
+
+  speech_llama_proj_model: ""
+  freeze_speech_llama_proj: False
+
+  lora: True
+  lora_rank: 8
+  lora_alpha: 28        # match the released SQA checkpoint (not the 32 default)
+  lora_dropout: 0.1
+
+  multi_prompt: True
+  prompt_template: "USER: {}\nASSISTANT:"
+  prompt_path: "${oc.env:SQA_ROOT}/experiments/planb/train/prompts_planb.json"
+  test_prompt_path: "${oc.env:SQA_ROOT}/experiments/planb/train/test_prompt_planb.json"
+  max_txt_len: 300
+  end_sym: "</s>"
+
+datasets:
+  train_ann_path: "${oc.env:SQA_ROOT}/experiments/results/planb/manifests/train_stage2.json"
+  valid_ann_path: "${oc.env:SQA_ROOT}/experiments/results/planb/manifests/val_stage2.json"
+  test_ann_path: "${oc.env:SQA_ROOT}/experiments/results/planb/manifests/val_stage2.json"
+  whisper_path: "${oc.env:SQA_ROOT}/salmonn_sqa/models/whisper-large-v2"
+
+run:
+  seed: 42
+  output_dir: "${oc.env:SQA_ROOT}/experiments/results/planb/ckpt_stage2"
+  evaluate: False
+
+  log_freq: 10
+  epoch_based: True
+  iters_per_epoch: 2000          # ~4000 train clips / batch 2; used by the LR schedule
+  accum_grad_iters: 8            # effective batch ~16 on a single 24 GB GPU
+  batch_size_train: 2
+  batch_size_eval: 2
+  num_workers: 4
+
+  device: "cuda"
+  use_distributed: False         # single 4090
+  amp: True
+  world_size: 1
+  dist_url: "env://"
+
+  optims:
+    max_epoch: 4
+    warmup_steps: 300
+    warmup_start_lr: 1e-6
+    init_lr: 1e-5                 # gentle: continue-train a good SQA ckpt, avoid forgetting
+    min_lr: 1e-6
+    weight_decay: 0.05
+    beta2: 0.999

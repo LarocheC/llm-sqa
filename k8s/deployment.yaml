@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: salmonn-sqa-api
+  labels:
+    app: salmonn-sqa-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: salmonn-sqa-api
+  template:
+    metadata:
+      labels:
+        app: salmonn-sqa-api
+    spec:
+      containers:
+      - name: api
+        image: salmonnsqaacr.azurecr.io/salmonn-sqa-api:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: CONFIG_PATH
+          value: "/app/salmonn_sqa/inference_config.yaml"
+        - name: DEVICE
+          value: "cuda:0"
+        resources:
+          requests:
+            memory: "16Gi"
+            cpu: "4"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "32Gi"
+            cpu: "8"
+            nvidia.com/gpu: "1"
+        volumeMounts:
+        - name: models
+          mountPath: /app/salmonn_sqa/models
+          readOnly: true
+        - name: checkpoints
+          mountPath: /app/salmonn_sqa/ckpt
+          readOnly: true
+        - name: config
+          mountPath: /app/salmonn_sqa/inference_config.yaml
+          subPath: inference_config.yaml
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 120
+          periodSeconds: 10
+          timeoutSeconds: 5
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: salmonn-models-pvc
+      - name: checkpoints
+        persistentVolumeClaim:
+          claimName: salmonn-ckpt-pvc
+      - name: config
+        configMap:
+          name: salmonn-config
+      nodeSelector:
+        accelerator: nvidia-gpu
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule

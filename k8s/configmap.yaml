@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: salmonn-config
+data:
+  inference_config.yaml: |
+    model:
+      llama_path: "/app/salmonn_sqa/models/vicuna-7b-v1_5"
+      whisper_path: "/app/salmonn_sqa/models/whisper-large-v2"
+      beats_path: "/app/salmonn_sqa/models/BEATs_iter3_plus_AS2M_finetuned_on_AS2M_cpt2.pt"
+      ckpt: "/app/salmonn_sqa/ckpt/finetuned_SALMONN_7B_2.pth"
+
+      freeze_whisper: True
+      freeze_beats: True
+
+      use_speech_Qformer: True
+      freeze_speech_QFormer: False
+      window_level_Qformer: True
+      num_speech_query_token: 1
+      second_per_window: 0.333333
+      second_stride: 0.333333
+
+      speech_llama_proj_model: ""
+      freeze_speech_llama_proj: False
+
+      lora: True
+      lora_rank: 8
+      lora_alpha: 28
+      lora_dropout: 0.1
+
+      multi_prompt: True
+      prompt_template: "USER: {}\nASSISTANT:"
+      max_txt_len: 300
+      end_sym: "</s>"
+
+    generate:
+      max_new_tokens: 200
+      num_beams: 4
+      do_sample: False
+      min_length: 1
+      temperature: 1.0
+      top_p: 0.9
+      repetition_penalty: 1.0
+      length_penalty: 1.0

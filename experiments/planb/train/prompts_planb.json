@@ -1,0 +1,16 @@
+{
+    "sqa_score": [
+        "<Speech><SpeechHere></Speech> Rate this speech recording on each quality dimension from 1 (very bad) to 5 (excellent): noise, reverberation, bandwidth, clipping, discontinuity, loudness.",
+        "<Speech><SpeechHere></Speech> Score the speech quality on six dimensions, each from 1 to 5 (1 = very bad, 5 = excellent): noise, reverberation, bandwidth, clipping, discontinuity, loudness.",
+        "<Speech><SpeechHere></Speech> Listen to the recording and give a 1-5 rating for each of: noise, reverberation, bandwidth, clipping, discontinuity, loudness.",
+        "<Speech><SpeechHere></Speech> Judge the recording quality. For each dimension (noise, reverberation, bandwidth, clipping, discontinuity, loudness) output a score from 1 (very bad) to 5 (excellent).",
+        "<Speech><SpeechHere></Speech> Provide per-dimension quality scores from 1 to 5 for noise, reverberation, bandwidth, clipping, discontinuity and loudness."
+    ],
+    "sqa_full": [
+        "<Speech><SpeechHere></Speech> Assess the quality of this speech recording. First rate each dimension from 1 (very bad) to 5 (excellent): noise, reverberation, bandwidth, clipping, discontinuity, loudness. Then describe the main problems you hear in 1-3 sentences. Finally give an overall MOS from 1.00 to 5.00.",
+        "<Speech><SpeechHere></Speech> Evaluate this speech. Give a 1-5 score for each of noise, reverberation, bandwidth, clipping, discontinuity and loudness, then describe what is wrong in a sentence or two, then an overall MOS between 1.00 and 5.00.",
+        "<Speech><SpeechHere></Speech> Rate the recording on six dimensions (noise, reverberation, bandwidth, clipping, discontinuity, loudness) from 1 to 5, briefly describe the dominant degradations, and end with an overall MOS from 1.00 to 5.00.",
+        "<Speech><SpeechHere></Speech> Listen and assess quality: per-dimension scores 1-5 (noise, reverberation, bandwidth, clipping, discontinuity, loudness), a short grounded description of the problems, and a final overall MOS (1.00-5.00).",
+        "<Speech><SpeechHere></Speech> Give a descriptive quality assessment: score noise, reverberation, bandwidth, clipping, discontinuity and loudness each from 1 to 5, describe the audible issues in 1-3 sentences, then state the overall MOS from 1.00 to 5.00."
+    ]
+}

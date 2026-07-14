@@ -1,0 +1,49 @@
+# Model + checkpoint paths are resolved from the SQA_ROOT environment variable
+# (OmegaConf ${oc.env:...} interpolation). salmonn_core sets SQA_ROOT to the repo
+# root by default; set it to /app in the container. Run scripts/setup_salmonn.sh
+# to fetch the SALMONN code and download these weights — none are committed.
+model:
+  llama_path: "${oc.env:SQA_ROOT}/salmonn_sqa/models/vicuna-7b-v1_5"
+  whisper_path: "${oc.env:SQA_ROOT}/salmonn_sqa/models/whisper-large-v2"
+  beats_path: "${oc.env:SQA_ROOT}/salmonn_sqa/models/BEATs_iter3_plus_AS2M_finetuned_on_AS2M_cpt2.pt"
+  ckpt: "${oc.env:SQA_ROOT}/salmonn_sqa/ckpt/finetuned_SALMONN_7B_2.pth"
+
+  freeze_whisper: True
+  freeze_beats: True
+
+  use_speech_Qformer: True
+  freeze_speech_QFormer: False
+  window_level_Qformer: True
+  num_speech_query_token: 1
+  second_per_window: 0.333333
+  second_stride: 0.333333
+
+  speech_llama_proj_model: ""
+  freeze_speech_llama_proj: False
+
+  lora: True
+  lora_rank: 8
+  lora_alpha: 28
+  lora_dropout: 0.1
+
+  multi_prompt: True
+  prompt_template: "USER: {}\nASSISTANT:"
+  max_txt_len: 300
+  end_sym: "</s>"
+
+# Decoding: beam search. The prior parroting was caused by a leaked worked
+# example in the prompt (now removed), NOT by greedy decoding — so beam search
+# is kept (it is what this checkpoint was validated with and is numerically
+# stable). Sampling (do_sample=True) was tried but this model emits occasional
+# inf/nan logits that crash multinomial sampling. max_new_tokens is raised to
+# 400 so descriptions don't truncate mid-sentence; a mild repetition_penalty
+# discourages the model from looping.
+generate:
+  max_new_tokens: 400
+  num_beams: 4
+  do_sample: False
+  min_length: 1
+  temperature: 1.0
+  top_p: 0.9
+  repetition_penalty: 1.0
+  length_penalty: 1.0

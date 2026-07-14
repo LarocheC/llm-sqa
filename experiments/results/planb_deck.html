@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan B — De-specializing SALMONN-SQA</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --ink:#e6edf3; --dim:#9aa7b4; --line:#30363d;
+    --accent:#58a6ff; --good:#3fb950; --bad:#f85149; --warn:#d29922; --mag:#bc8cff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  #deck{height:100vh;width:100vw;overflow:hidden;position:relative}
+  .slide{position:absolute;inset:0;padding:3.2vh 4.5vw;opacity:0;visibility:hidden;
+    transition:opacity .25s ease;overflow:auto;display:flex;flex-direction:column}
+  .slide.active{opacity:1;visibility:visible}
+  h1{font-size:3.0rem;margin:.2em 0 .1em;line-height:1.08}
+  h2{font-size:1.9rem;margin:0 0 .55em;color:var(--accent);
+    border-bottom:1px solid var(--line);padding-bottom:.28em;font-weight:650}
+  h3{font-size:1.15rem;margin:.4em 0 .25em;color:var(--mag)}
+  p,li{font-size:1.06rem;line-height:1.5;color:var(--ink)}
+  .sub{color:var(--dim);font-size:1.25rem;font-weight:400}
+  .dim{color:var(--dim)}
+  .good{color:var(--good);font-weight:650}
+  .bad{color:var(--bad);font-weight:650}
+  .warn{color:var(--warn)}
+  .mag{color:var(--mag)}
+  code{background:#1f2630;padding:.08em .38em;border-radius:5px;font-size:.9em;
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+  ul{margin:.3em 0 .3em;padding-left:1.25em}
+  li{margin:.28em 0}
+  .cols{display:flex;gap:2.2vw;flex:1;min-height:0}
+  .cols>div{flex:1;min-width:0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:1.0em 1.2em;margin:.4em 0}
+  table{border-collapse:collapse;width:100%;font-size:.97rem;margin:.3em 0}
+  th,td{border:1px solid var(--line);padding:.42em .6em;text-align:left;vertical-align:top}
+  th{background:#1f2630;color:var(--accent);font-weight:600}
+  tr:nth-child(even) td{background:#12171e}
+  .fig{display:flex;align-items:center;justify-content:center;flex:1;min-height:0;margin-top:.4em}
+  .fig img{max-width:100%;max-height:100%;object-fit:contain;background:#fff;
+    border-radius:10px;border:1px solid var(--line)}
+  .cap{color:var(--dim);font-size:.92rem;text-align:center;margin-top:.5em}
+  .pill{display:inline-block;background:#1f2630;border:1px solid var(--line);
+    border-radius:999px;padding:.15em .7em;font-size:.85rem;color:var(--dim);margin:.15em .25em .15em 0}
+  .big{font-size:1.5rem}
+  .kpi{display:flex;gap:1.2vw;flex-wrap:wrap;margin:.4em 0}
+  .kpi .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:.8em 1.1em;flex:1;min-width:150px}
+  .kpi .num{font-size:1.9rem;font-weight:700}
+  .kpi .lbl{color:var(--dim);font-size:.86rem;margin-top:.2em}
+  .arrow{color:var(--accent);font-weight:700}
+  footer{position:fixed;bottom:10px;right:16px;color:#566;font-size:.8rem}
+  .nav{position:fixed;bottom:10px;left:16px;color:#566;font-size:.8rem}
+  .progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);
+    transition:width .25s ease;z-index:10}
+  .center{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;height:100%}
+  .lead{font-size:1.35rem;line-height:1.5}
+  svg{width:100%;height:auto}
+  .legend span{margin-right:1.2em;font-size:.92rem}
+  .sw{display:inline-block;width:.8em;height:.8em;border-radius:3px;margin-right:.35em;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div id="deck">
+
+<!-- 1 — TITLE -->
+<section class="slide active">
+  <div class="center">
+    <div class="pill">Audio-LLM · Speech-Quality Assessment</div>
+    <h1>Plan B<br><span class="sub">De-specializing SALMONN-SQA into a calibrated, multi-dimensional speech-quality rater</span></h1>
+    <p class="lead dim" style="margin-top:1em">
+      Turning a <span class="warn">lenient noise specialist</span> into a model that
+      <span class="good">perceives, names, and scores</span> every common degradation —
+      and emits a <span class="good">de-compressed, calibrated MOS</span>.
+    </p>
+    <p class="dim" style="margin-top:1.4em">Clement Laroche · final model <code>ckpt_stage2_v3</code> · LibriTTS-R → VoiceBank-DEMAND held-out</p>
+  </div>
+</section>
+
+<!-- 2 — THE MODEL -->
+<section class="slide">
+  <h2>The model: SALMONN-7B, SQA-finetuned</h2>
+  <div class="cols">
+    <div>
+      <p>An audio LLM: two <b>frozen</b> encoders → a trained audio bottleneck → spliced into a frozen Vicuna-7B with a small LoRA adapter.</p>
+      <ul>
+        <li><b class="mag">Whisper-Large-v2</b> — log-mel → 1280-d. ASR-trained, deliberately <span class="warn">reverb-invariant</span>.</li>
+        <li><b class="mag">BEATs</b> — raw waveform → 768-d acoustic-event features.</li>
+        <li><b class="mag">Window-level Q-Former</b> — ~0.33 s windows, 1 query each → ~88 tokens. <span class="good">TRAINED</span>. ~17:1 compression.</li>
+        <li><b class="mag">Linear projection</b> 768→4096 → spliced at <code>&lt;SpeechHere&gt;</code>. <span class="good">TRAINED</span>.</li>
+        <li><b class="mag">Vicuna-7B-v1.5 + LoRA</b> (r=8, α=28). Base <span class="warn">FROZEN</span>, LoRA <span class="good">TRAINED</span>.</li>
+      </ul>
+    </div>
+    <div>
+      <svg viewBox="0 0 420 360" role="img" aria-label="SALMONN data flow">
+        <defs>
+          <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#58a6ff"/>
+          </marker>
+          <style>
+            .b{fill:#161b22;stroke:#30363d;rx:8}
+            .frozen{stroke:#d29922}
+            .trained{stroke:#3fb950}
+            .t{fill:#e6edf3;font:13px sans-serif}
+            .s{fill:#9aa7b4;font:10.5px sans-serif}
+            .ln{stroke:#58a6ff;stroke-width:2;marker-end:url(#ar);fill:none}
+          </style>
+        </defs>
+        <rect class="b frozen" x="20" y="10" width="170" height="44" rx="8"/>
+        <text class="t" x="32" y="30">Whisper-Large-v2</text><text class="s" x="32" y="46">frozen · mel→1280-d</text>
+        <rect class="b frozen" x="230" y="10" width="170" height="44" rx="8"/>
+        <text class="t" x="242" y="30">BEATs</text><text class="s" x="242" y="46">frozen · wav→768-d</text>
+        <rect class="b" x="120" y="86" width="180" height="34" rx="8" style="stroke:#30363d"/>
+        <text class="t" x="150" y="107">concat → 2048-d</text>
+        <rect class="b trained" x="100" y="150" width="220" height="44" rx="8"/>
+        <text class="t" x="120" y="170">Window Q-Former</text><text class="s" x="120" y="186">TRAINED · ~88 tokens (17:1)</text>
+        <rect class="b trained" x="110" y="224" width="200" height="34" rx="8"/>
+        <text class="t" x="128" y="245">Linear proj 768→4096</text>
+        <rect class="b" x="60" y="288" width="300" height="50" rx="8" style="stroke:#d29922"/>
+        <text class="t" x="80" y="308">Vicuna-7B  (FROZEN)</text>
+        <text class="s" x="80" y="325" style="fill:#3fb950">+ LoRA r=8 α=28 · TRAINED</text>
+        <line class="ln" x1="105" y1="54" x2="160" y2="84"/>
+        <line class="ln" x1="315" y1="54" x2="260" y2="84"/>
+        <line class="ln" x1="210" y1="120" x2="210" y2="148"/>
+        <line class="ln" x1="210" y1="194" x2="210" y2="222"/>
+        <line class="ln" x1="210" y1="258" x2="210" y2="286"/>
+      </svg>
+      <p class="cap">Plan B trains only the green blocks + LoRA. Encoders stay frozen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 — THE PROBLEM -->
+<section class="slide">
+  <h2>The problem: a lenient noise specialist</h2>
+  <p>The SQA checkpoint described <b>additive noise</b> well — but as a quality <i>meter</i> it was weak and blind to whole degradation classes.</p>
+  <div class="cols">
+    <div>
+      <div class="card">
+        <h3>① MOS isn't a usable scale</h3>
+        <p>Coarse <span class="bad">5 discrete values, floored at 2.5</span>. Agrees with PESQ/NISQA/DNSMOS at only <b>ρ 0.40–0.49</b> — yet those metrics agree with <i>each other</i> at 0.72–0.82. It's the outlier.</p>
+      </div>
+      <div class="card">
+        <h3>② Blind to whole degradation types</h3>
+        <p><b class="bad">Reverberation: ρ(MOS,severity) = −0.11</b> (essentially no response). Weak on bandwidth (−0.39) and clipping (−0.33).</p>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>③ Blind to enhancement</h3>
+        <p>Run a denoiser: every objective metric improves, MOS moves <span class="bad">+0.03</span>. Useless as an automatic enhancer evaluator.</p>
+      </div>
+      <div class="card">
+        <h3>④ Brittle output</h3>
+        <p>Under out-of-distribution degradation it sometimes collapsed into a made-up JSON schema. And it was <span class="warn">acquiescent</span> — leading yes/no prompts → always "YES".</p>
+      </div>
+      <p class="dim" style="margin-top:.6em"><b>Goal:</b> keep the descriptive ability; add perception + calibration across <b>all</b> degradations.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 — EVIDENCE OF BLINDNESS (original plots) -->
+<section class="slide">
+  <h2>Evidence of the blindness (original model)</h2>
+  <div class="cols">
+    <div>
+      <div class="fig"><img src="mos_vs_snr.png" alt="orig MOS vs SNR"></div>
+      <p class="cap">MOS barely tracks SNR, and the cloud sits in a narrow high band — the floored, compressed scale.</p>
+    </div>
+    <div>
+      <div class="fig"><img src="mos_vs_neural.png" alt="orig MOS vs neural metrics"></div>
+      <p class="cap">Against DNSMOS / NISQA / PESQ the MOS is quantized into a few horizontal stripes — weak rank agreement (ρ 0.40–0.49).</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 — EXPERIMENT DESIGN -->
+<section class="slide">
+  <h2>Experiment design: de-risk, then train</h2>
+  <div class="card">
+    <svg viewBox="0 0 980 130" role="img" aria-label="experiment pipeline">
+      <defs><marker id="a2" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#58a6ff"/></marker></defs>
+      <g font-family="sans-serif">
+        <rect x="10" y="35" width="180" height="60" rx="10" fill="#161b22" stroke="#bc8cff"/>
+        <text x="30" y="60" fill="#e6edf3" font-size="14">Stage 0 — probe</text>
+        <text x="30" y="80" fill="#9aa7b4" font-size="11">Is it decodable from</text>
+        <text x="30" y="93" fill="#9aa7b4" font-size="11">frozen features?</text>
+        <rect x="250" y="35" width="200" height="60" rx="10" fill="#161b22" stroke="#58a6ff"/>
+        <text x="270" y="60" fill="#e6edf3" font-size="14">Corpus generation</text>
+        <text x="270" y="80" fill="#9aa7b4" font-size="11">on-the-fly degradations</text>
+        <text x="270" y="93" fill="#9aa7b4" font-size="11">+ Opus paraphrase</text>
+        <rect x="510" y="35" width="210" height="60" rx="10" fill="#161b22" stroke="#3fb950"/>
+        <text x="530" y="58" fill="#e6edf3" font-size="14">Two-stage LoRA-SFT</text>
+        <text x="530" y="78" fill="#9aa7b4" font-size="11">S1 calibrate → S2 reason</text>
+        <text x="530" y="91" fill="#9aa7b4" font-size="11">encoders stay frozen</text>
+        <rect x="780" y="35" width="190" height="60" rx="10" fill="#161b22" stroke="#d29922"/>
+        <text x="800" y="60" fill="#e6edf3" font-size="14">Held-out eval</text>
+        <text x="800" y="80" fill="#9aa7b4" font-size="11">re-measure all 5</text>
+        <text x="800" y="93" fill="#9aa7b4" font-size="11">findings</text>
+        <line x1="190" y1="65" x2="248" y2="65" stroke="#58a6ff" stroke-width="2" marker-end="url(#a2)"/>
+        <line x1="450" y1="65" x2="508" y2="65" stroke="#58a6ff" stroke-width="2" marker-end="url(#a2)"/>
+        <line x1="720" y1="65" x2="778" y2="65" stroke="#58a6ff" stroke-width="2" marker-end="url(#a2)"/>
+      </g>
+    </svg>
+  </div>
+  <div class="cols">
+    <div><div class="card"><h3>The key question, asked cheaply first</h3>
+      <p>Whisper is reverb-invariant and the Q-Former compresses 17:1. If reverb/bandwidth info is <i>destroyed</i> in the frozen front-end, no LoRA training can recover it — we'd need to unfreeze the encoders (much heavier). So <b>probe before you train.</b></p></div></div>
+    <div><div class="card"><h3>The hypothesis</h3>
+      <p>The blindness lives in the LLM's <b>learned read-out</b> (only ever trained on noise), <i>not</i> the architecture. If true, the fix is <b class="good">data + targets</b>, not surgery on the encoders.</p></div></div>
+  </div>
+</section>
+
+<!-- 6 — STAGE 0 method -->
+<section class="slide">
+  <h2>Stage 0 — is degradation decodable from frozen features?</h2>
+  <div class="cols">
+    <div>
+      <p>Apply graded degradations with <b>known</b> parameters, extract features at four taps of the <b>frozen</b> model, fit a <b>linear probe</b> (standardize → PCA → ridge), score by R²+Spearman, <b>held out by utterance</b>.</p>
+      <p class="dim">A <i>linear</i> probe is the whole point: it tests whether the info is linearly <b>decodable</b> — present and accessible — not buried in a tangle.</p>
+      <table>
+        <tr><th>tap</th><th>what it is</th></tr>
+        <tr><td><code>whisper</code></td><td>Whisper output (1280-d, frozen)</td></tr>
+        <tr><td><code>beats</code></td><td>BEATs output (768-d, frozen)</td></tr>
+        <tr><td><code>concat</code></td><td>[whisper|beats] — feeds Q-Former</td></tr>
+        <tr><td><code>qformer</code></td><td>Q-Former+proj — the bottleneck that <b>reaches the LLM</b></td></tr>
+      </table>
+      <p><b class="good">Result — PASSED.</b> R² 0.82–0.95, Spearman 0.90–0.98 at <i>every</i> tap, including the Q-Former output.</p>
+      <p><b>Decision:</b> keep encoders frozen; fix = data + targets.</p>
+    </div>
+    <div>
+      <div class="fig"><img src="planb/stage0_r2_bars.png" alt="stage0 R2 bars"></div>
+      <p class="cap">Held-out R² per degradation × tap — all well above the 0.5 "decodable" line, including <code>qformer</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 — Stage 0 scatter + insight -->
+<section class="slide">
+  <h2>Stage 0 — the signal survives to the LLM's doorstep</h2>
+  <div class="cols">
+    <div style="flex:1.4">
+      <div class="fig"><img src="planb/stage0_scatter.png" alt="stage0 scatter"></div>
+    </div>
+    <div>
+      <div class="card"><h3>Where the blindness actually is</h3>
+        <p>Predicted-vs-true RT60 / cutoff / clip-fraction sit tight on <b>y=x</b> at every tap — including the <code>qformer</code> bottleneck that feeds the LLM.</p>
+        <p>So the degradation reaches the language model intact. The original model was simply never <i>taught to read it</i> — its read-out head was trained only on additive noise.</p>
+        <p class="dim">Note: each axis is probed one-at-a-time, so this proves per-axis <b>detectability</b>, not type-<i>discrimination</i>. Discriminating <i>which</i> degradation is the residual that the v3 synthetic-type data fixes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 — DATA GENERATION -->
+<section class="slide">
+  <h2>Data generation: on-the-fly, known-parameter corpus</h2>
+  <div class="cols">
+    <div>
+      <h3>Clean speech — leakage-safe</h3>
+      <ul>
+        <li><b>Train:</b> LibriTTS-R <code>train-clean-100</code> — 4,000 clips (seed 1)</li>
+        <li><b>Val:</b> LibriTTS-R <code>dev-clean</code> — 300 clips (seed 7)</li>
+        <li>No VCTK speakers → <b>disjoint</b> from the VoiceBank-DEMAND eval speakers. No DEMAND noise in training.</li>
+      </ul>
+      <h3>Description text — Opus 4.8 paraphrase</h3>
+      <ul>
+        <li>Templated facts → deduped to ~740 unique degradation profiles → one Claude <b>Opus 4.8</b> call each (structured output)</li>
+        <li><b>Grounding-verified:</b> must name every degraded axis, never a clean one</li>
+        <li>All 4,300 descriptions paraphrased, <b class="good">0 template fallbacks</b></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Degradations — real + synthetic mix</h3>
+      <table>
+        <tr><th>axis</th><th>how</th><th>train count</th></tr>
+        <tr><td>reverb</td><td>real measured RIRs + synthetic exp-decay</td><td>2,783</td></tr>
+        <tr><td>noise</td><td>real MUSAN + synth white/pink/brown</td><td>512</td></tr>
+        <tr><td>codec</td><td>real Opus/MP3 → folds to bandwidth</td><td>509</td></tr>
+        <tr><td>bandwidth</td><td>Butterworth low-pass</td><td>DSP</td></tr>
+        <tr><td>clipping</td><td>hard-clip</td><td>DSP</td></tr>
+        <tr><td>discontinuity</td><td>frame-drop</td><td>DSP</td></tr>
+        <tr><td>loudness</td><td>re-gain</td><td>DSP</td></tr>
+        <tr><td>clean</td><td>untouched</td><td>373</td></tr>
+      </table>
+      <p class="dim">A blind-spot-weighted sampler gives each clip 0–3 axes. The <b>real+synthetic</b> mix is the v3 addition — it closes the train/eval gap, since the held-out sweep uses <i>synthetic</i> degradations the earlier corpus never saw.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9 — CHOICE OF ARTEFACTS / SEVERITY MAP -->
+<section class="slide">
+  <h2>Choice of artefacts &amp; the severity map</h2>
+  <p>Eight real-world degradation classes, each scored <b>1–5 from its exact applied parameter</b> (<span class="good">5 = pristine</span>, <span class="bad">1 = severe</span>) — noise-free supervision the model can't game.</p>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>axis</th><th>parameter → score bands</th></tr>
+        <tr><td>noise</td><td>SNR dB: ≥30→5, 20–30→4, 12–20→3, 6–12→2, &lt;6→1</td></tr>
+        <tr><td>reverb</td><td>RT60: &lt;.25→4, –.45→3, –.70→2, &gt;.70→1; DRR&lt;−15 → −1</td></tr>
+        <tr><td>bandwidth</td><td>cutoff Hz: ≥7500→5, –6000→4, –4000→3, –2500→2, &lt;2500→1</td></tr>
+        <tr><td>clipping</td><td>clipped frac: 0→5, &lt;1%→4, –5%→3, –15%→2, &gt;15%→1</td></tr>
+        <tr><td>discontinuity</td><td>loss rate: 0→5, &lt;2%→4, –5%→3, –10%→2, &gt;10%→1</td></tr>
+        <tr><td>loudness</td><td>|Δ gain| dB: ≤3→5, –6→4, –12→3, –20→2, &gt;20→1</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="card"><h3>Three design choices</h3>
+        <ul>
+          <li><b>Perceptual bands</b> — thresholds follow speech-quality convention (telephone bandwidth ≈ 3.4 kHz → &lt;2500 Hz is worst; small vs large room ≈ RT60 0.3 vs 0.6+).</li>
+          <li><b>Reverb floors at 4</b> for any applied RIR — measured RIRs are measured at distance (DRR ≈ −10 dB even at RT60 0.15), never truly "dry". A very low DRR drops one more band. <span class="dim">(This fixed an early mislabel where RT60 0.15 scored "clean".)</span></li>
+          <li><b>Use the measured effect, not the knob</b> — clipping/discontinuity score on the <i>actually measured</i> fraction; codec folds into bandwidth via measured spectral rolloff (a lossy codec is never transparent).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 — TARGETS / MOS -->
+<section class="slide">
+  <h2>Targets: calibrate-then-describe</h2>
+  <div class="cols">
+    <div>
+      <div class="card"><h3>Per-dimension 1–5 scores</h3>
+        <p>From exact degradation params (above). The direct fix for "the quality prior overrides the named dimension".</p></div>
+      <div class="card"><h3>Overall MOS</h3>
+        <p><code>0.55·min + 0.45·mean</code> of the dimension scores (worst-axis-dominant), then blended <b>70/30</b> with a fused <b>PESQ + NISQA + DNSMOS</b> metric MOS, to 2 decimals.</p>
+        <p class="dim">Pure metric fusion was tried and rejected: PESQ floors on any reverb and DNSMOS is reverb-blind — they can't rank the very axes we need.</p></div>
+    </div>
+    <div>
+      <div class="card"><h3>Description</h3>
+        <p>Templated facts → Opus 4.8 paraphrase → grounding-verified prose, sampled per clip.</p></div>
+      <div class="card" style="border-color:#3fb950"><h3>The expected I/O</h3>
+        <p><b>Input:</b> waveform + <code>sqa_full</code> instruction.</p>
+        <p><b class="mag">Stage 1 target:</b> the <i>score block only</i> — learn the calibrated numbers first.</p>
+        <p><b class="mag">Stage 2 target:</b> score block <b>+ paraphrased description + <code>Overall MOS</code></b> — describe &amp; rate on top of the calibration.</p>
+        <p class="dim">Cross-entropy is applied only to target tokens; the prompt and the 88 audio embeddings are masked to −100.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 — TRAINING / LoRA -->
+<section class="slide">
+  <h2>Training: two-stage LoRA-SFT</h2>
+  <div class="cols">
+    <div>
+      <h3>What LoRA does here</h3>
+      <p>Instead of updating Vicuna's 7B frozen weights, we learn tiny low-rank adapters (<code>r=8, α=28</code>) injected into its attention/MLP projections — a few million trainable params that re-shape the <b>read-out</b> without disturbing the base language model.</p>
+      <p>Trainable: <b class="good">Q-Former + speech→LLaMA projection + Vicuna-LoRA</b>.<br>
+         Frozen: <b class="warn">Whisper, BEATs, Vicuna base</b> (Stage 0 said encoders can stay frozen).</p>
+      <div class="card">
+        <span class="pill">single GPU</span><span class="pill">AMP</span>
+        <span class="pill">batch 2 × accum 8</span><span class="pill">lr 1e-5</span>
+        <span class="pill">warmup→cosine</span>
+        <p class="dim" style="margin-top:.5em">CE loss on target tokens only; audio embeds + prompt masked.</p>
+      </div>
+    </div>
+    <div>
+      <table>
+        <tr><th>stage</th><th>target text</th><th>from</th><th>ep</th></tr>
+        <tr><td><b>1 — calibration</b><br><span class="dim">task <code>sqa_score</code></span></td><td>per-dimension <b>score block only</b></td><td>released SQA ckpt</td><td>2</td></tr>
+        <tr><td><b>2 — reasoning</b><br><span class="dim">task <code>sqa_full</code></span></td><td>scores <b>+ description + Overall MOS</b></td><td>Stage 1 best (<code>strict=False</code>)</td><td>4</td></tr>
+      </table>
+      <div class="card" style="margin-top:1em"><h3>Why two stages</h3>
+        <p>Learn the <b>calibrated numbers</b> in isolation first (no description tokens competing for the gradient), then teach the model to <b>describe and emit MOS on top of</b> a representation that already rates correctly. Calibrate → then reason.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 — RESULTS table -->
+<section class="slide">
+  <h2>Results: all five findings re-measured</h2>
+  <p class="dim">Held-out: synthetic degradation sweep on VoiceBank-DEMAND clean (training used real RIRs/MUSAN/codec on LibriTTS — disjoint speakers).</p>
+  <table>
+    <tr><th>#</th><th>Original finding</th><th>v3</th></tr>
+    <tr><td>1</td><td>MOS↔SNR ρ 0.37, lenient</td><td><b class="good">ρ 0.50</b>; penalizes low SNR; names noise 99% at low SNR</td></tr>
+    <tr><td>2</td><td>Calibration ρ 0.40–0.49 (outlier); <b class="bad">5 values floored at 2.5</b></td><td><b class="good">ρ 0.69–0.75</b> (inside the metrics' 0.72–0.82 band); <b class="good">81 distinct values</b> (2.10–4.89)</td></tr>
+    <tr><td>3</td><td>reverb <b class="bad">−0.11</b>, bw −0.39, clip −0.33</td><td>reverb <b class="good">−0.95</b>, bw −0.81, clip −0.83, noise −0.93</td></tr>
+    <tr><td>4</td><td>Enhancement: MOS +0.03, ρ(gain,PESQ)≈0</td><td>MOS gain <b class="good">+0.68</b> (76% of files), ρ <b class="good">+0.22</b></td></tr>
+    <tr><td>5</td><td>Acquiescence — leading yes/no → always "YES"</td><td>emits calibrated discriminative scores; failure mode N/A</td></tr>
+  </table>
+  <div class="kpi">
+    <div class="box"><div class="num good">5→81</div><div class="lbl">distinct MOS values</div></div>
+    <div class="box"><div class="num good">−0.11→−0.95</div><div class="lbl">reverb sensitivity ρ</div></div>
+    <div class="box"><div class="num good">0 / 108</div><div class="lbl">degenerate outputs</div></div>
+    <div class="box"><div class="num good">90%</div><div class="lbl">real-noise naming (v1 30→v2 72→v3 90)</div></div>
+  </div>
+</section>
+
+<!-- 13 — RESULTS plots: calibration -->
+<section class="slide">
+  <h2>Results: the MOS scale is rebuilt</h2>
+  <div class="cols">
+    <div>
+      <div class="fig"><img src="planb/mos_vs_snr_v3.png" alt="v3 MOS vs SNR"></div>
+      <p class="cap">MOS vs SNR — the v3 cloud spreads across the full range and slopes with SNR (was a flat high band).</p>
+    </div>
+    <div>
+      <div class="fig"><img src="planb/mos_vs_neural_v3.png" alt="v3 MOS vs metrics"></div>
+      <p class="cap">v3 MOS vs DNSMOS / NISQA / PESQ — continuous and rank-aligned (ρ 0.69–0.75); the original's horizontal stripes are gone.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 14 — RESULTS plots: sweep + enhancement -->
+<section class="slide">
+  <h2>Results: every axis now responds</h2>
+  <div class="cols">
+    <div>
+      <div class="fig"><img src="planb/degradation_sweep_v3.png" alt="degradation sweep v3"></div>
+      <p class="cap">MOS vs severity across all axes — monotone downward everywhere, including the former reverb blind spot.</p>
+    </div>
+    <div>
+      <div class="fig"><img src="planb/enhancement_blindness.png" alt="enhancement blindness fixed"></div>
+      <p class="cap">Enhancement: original MOS is flat noisy→enhanced; v3 MOS rises with the denoiser's gain (usable as an enhancer evaluator).</p>
+    </div>
+  </div>
+</section>
+
+<!-- 15 — scale usage -->
+<section class="slide">
+  <h2>Results: from a 5-rung ladder to a continuous meter</h2>
+  <div class="cols">
+    <div style="flex:1.3">
+      <div class="fig"><img src="planb/mos_scale_usage.png" alt="MOS scale usage"></div>
+    </div>
+    <div>
+      <div class="card">
+        <p>The single clearest picture of the fix: the original model only ever emitted a <b class="bad">handful of MOS values, floored well above the bottom of the scale</b>.</p>
+        <p>v3 uses <b class="good">81 distinct values spanning 2.10–4.89</b> — it actually <i>meters</i> quality instead of bucketing it.</p>
+        <p class="dim">This de-compression is what lets the rank-correlations climb into the band where the trusted neural metrics agree with one another.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16 — BOTTOM LINE -->
+<section class="slide">
+  <h2>Bottom line</h2>
+  <div class="center" style="height:auto">
+    <p class="lead">v3 turns a <span class="warn">lenient noise specialist with a weak 5-value MOS</span> into a <span class="good">calibrated, multi-dimensional rater</span>:</p>
+    <ul class="lead">
+      <li>MOS de-compressed (5 → 81 values), agreeing with PESQ/NISQA/DNSMOS as well as they agree with each other</li>
+      <li>Perceives and ranks <b>every</b> degradation type — including the former reverb blind spot</li>
+      <li>Tracks enhancement gain → usable as an automatic enhancer evaluator (it wasn't before)</li>
+      <li>Names degradations in natural, grounded prose; <b>0 degenerate outputs</b></li>
+    </ul>
+    <p class="dim" style="margin-top:.6em">The per-dimension structured scores are the most reliable signal. The whole fix was <b>data + targets</b> — encoders never unfrozen, validated up-front by the Stage 0 probe.</p>
+    <div class="card" style="margin-top:.8em">
+      <h3>Optional further work</h3>
+      <p>Scale clean pool to <code>train-clean-360</code> for more speaker diversity · more degradation types &amp; real recordings for far-OOD robustness · a small scalar regression head if any MOS banding remains.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="nav">← / → · Space · Home/End</div>
+<footer id="page"></footer>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=0;
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    document.getElementById('prog').style.width=((i+1)/slides.length*100)+'%';
+    document.getElementById('page').textContent=(i+1)+' / '+slides.length;
+    slides[i].scrollTop=0;
+  }
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','PageDown',' '].includes(e.key)){show(i+1);e.preventDefault();}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){show(i-1);e.preventDefault();}
+    else if(e.key==='Home'){show(0);}
+    else if(e.key==='End'){show(slides.length-1);}
+  });
+  document.addEventListener('click',e=>{if(e.target.closest('a'))return;
+    show(i+(e.clientX>window.innerWidth*0.35?1:-1));});
+  show(0);
+</script>
+</body>
+</html>

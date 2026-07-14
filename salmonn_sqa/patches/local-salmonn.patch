@@ -1,0 +1,44 @@
+diff --git a/cli_inference.py b/cli_inference.py
+index 97f4d9e..bea366f 100755
+--- a/cli_inference.py
++++ b/cli_inference.py
+@@ -57,6 +57,9 @@ while True:
+         with torch.cuda.amp.autocast(dtype=torch.float16):
+             print(model.generate(samples, cfg.config.generate, prompts=prompt)[0])
+         # print(model.generate(samples, cfg.config.generate, prompts=prompt)[0])
++    except EOFError:
++        # Exit cleanly when no more input is available
++        break
+     except Exception as e:
+         print(e)
+         import pdb; pdb.set_trace()
+\ No newline at end of file
+diff --git a/requirements.txt b/requirements.txt
+index 283110a..6f1cb08 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,10 +1,14 @@
+-torch==2.0.1
+-torchaudio==2.0.2
+-peft==0.3.0
+-soundfile 
++torch==2.2.0
++torchaudio==2.2.0
++peft==0.4.0
++soundfile
+ librosa
+-transformers==4.28.0
+-sentencepiece==0.1.97
+-accelerate==0.20.3
+-bitsandbytes==0.35.0
+-gradio==3.23.0
++transformers==4.35.0
++sentencepiece
++accelerate==0.23.0
++bitsandbytes==0.41.0
++gradio==3.50.0
++huggingface-hub>=0.16.4,<0.18
++omegaconf
++setuptools
++protobuf
+\ No newline at end of file

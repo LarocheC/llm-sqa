@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  salmonn-api:
+    build: .
+    image: salmonn-sqa-api:latest
+    container_name: salmonn-api
+    ports:
+      - "8000:8000"
+    environment:
+      - CONFIG_PATH=/app/salmonn_sqa/inference_config.yaml
+      - DEVICE=cuda:0
+    volumes:
+      # Mount models directory (download models first with run_sqa.sh)
+      - ./salmonn_sqa/models:/app/salmonn_sqa/models:ro
+      - ./salmonn_sqa/ckpt:/app/salmonn_sqa/ckpt:ro
+      - ./salmonn_sqa/inference_config.yaml:/app/salmonn_sqa/inference_config.yaml:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s

@@ -1,0 +1,252 @@
+{"id": "p232_001", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY"}
+{"id": "p232_001", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p232_001", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p232_001", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p232_001", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 3, "text": "3"}
+{"id": "p232_001", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_001", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p232_001", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p232_001", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_001", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p232_001", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_001", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_001", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_001", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p232_001", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN"}
+{"id": "p232_001", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN"}
+{"id": "p232_001", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_001", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_001", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_001", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_001", "family": "clip", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p232_002", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY"}
+{"id": "p232_002", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p232_002", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p232_002", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p232_002", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_002", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_002", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p232_002", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_002", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_002", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p232_002", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_002", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_002", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_002", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p232_002", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN"}
+{"id": "p232_002", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN"}
+{"id": "p232_002", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_002", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_002", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_002", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_002", "family": "clip", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p232_003", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p232_003", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p232_003", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p232_003", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p232_003", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 3, "text": "3"}
+{"id": "p232_003", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p232_003", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p232_003", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p232_003", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_003", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p232_003", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "MUFFLED", "text": "MUFFLED."}
+{"id": "p232_003", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_003", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_003", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p232_003", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_003", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_003", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_003", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_003", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_003", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_003", "family": "clip", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p232_005", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY"}
+{"id": "p232_005", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p232_005", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p232_005", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p232_005", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_005", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p232_005", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p232_005", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_005", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_005", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p232_005", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_005", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_005", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_005", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p232_005", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN"}
+{"id": "p232_005", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN"}
+{"id": "p232_005", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_005", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_005", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_005", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_005", "family": "clip", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p232_006", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY"}
+{"id": "p232_006", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p232_006", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p232_006", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p232_006", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_006", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_006", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p232_006", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_006", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_006", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_006", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_006", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_006", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_006", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p232_006", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN"}
+{"id": "p232_006", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN"}
+{"id": "p232_006", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_006", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_006", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_006", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_006", "family": "clip", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p232_007", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY"}
+{"id": "p232_007", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p232_007", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY"}
+{"id": "p232_007", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p232_007", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_007", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p232_007", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p232_007", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_007", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_007", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_007", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p232_007", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_007", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p232_007", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p232_007", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN"}
+{"id": "p232_007", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN"}
+{"id": "p232_007", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_007", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p232_007", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p232_007", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p232_007", "family": "clip", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p257_001", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p257_001", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p257_001", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p257_001", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p257_001", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_001", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p257_001", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 2, "text": "2"}
+{"id": "p257_001", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_001", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_001", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_001", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_001", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_001", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p257_001", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p257_001", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_001", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_001", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_001", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "DISTORTED", "text": "DISTORTED."}
+{"id": "p257_001", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_001", "family": "clip", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p257_001", "family": "clip", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p257_002", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p257_002", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p257_002", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p257_002", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p257_002", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_002", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p257_002", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p257_002", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_002", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_002", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_002", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_002", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_002", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p257_002", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p257_002", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_002", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_002", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_002", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "DISTORTED", "text": "DISTORTED."}
+{"id": "p257_002", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_002", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p257_002", "family": "clip", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p257_003", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p257_003", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p257_003", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p257_003", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p257_003", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_003", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p257_003", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p257_003", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_003", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_003", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_003", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "MUFFLED", "text": "MUFFLED."}
+{"id": "p257_003", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_003", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p257_003", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p257_003", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_003", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_003", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_003", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "DISTORTED", "text": "DISTORTED."}
+{"id": "p257_003", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_003", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p257_003", "family": "clip", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p257_004", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p257_004", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p257_004", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p257_004", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p257_004", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_004", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p257_004", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p257_004", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_004", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p257_004", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_004", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p257_004", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_004", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p257_004", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p257_004", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN \ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d\ud83d\udc4d"}
+{"id": "p257_004", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_004", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_004", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "DISTORTED", "text": "DISTORTED."}
+{"id": "p257_004", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_004", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p257_004", "family": "clip", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p257_006", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p257_006", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT."}
+{"id": "p257_006", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p257_006", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p257_006", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_006", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p257_006", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p257_006", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_006", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p257_006", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_006", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_006", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_006", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p257_006", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p257_006", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_006", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_006", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_006", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "DISTORTED", "text": "DISTORTED."}
+{"id": "p257_006", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_006", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p257_006", "family": "clip", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p257_007", "family": "reverb", "task": "2afc", "severity": "clean", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY."}
+{"id": "p257_007", "family": "reverb", "task": "2afc", "severity": "clean", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p257_007", "family": "reverb", "task": "2afc", "severity": "worst", "order": 0, "first_label": "DRY", "choice": "DRY", "text": "DRY"}
+{"id": "p257_007", "family": "reverb", "task": "2afc", "severity": "worst", "order": 1, "first_label": "REVERBERANT", "choice": "REVERBERANT", "text": "REVERBERANT"}
+{"id": "p257_007", "family": "reverb", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_007", "family": "reverb", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p257_007", "family": "reverb", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
+{"id": "p257_007", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_007", "family": "lowpass", "task": "2afc", "severity": "clean", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND"}
+{"id": "p257_007", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 0, "first_label": "FULLBAND", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_007", "family": "lowpass", "task": "2afc", "severity": "worst", "order": 1, "first_label": "MUFFLED", "choice": "FULLBAND", "text": "FULLBAND."}
+{"id": "p257_007", "family": "lowpass", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_007", "family": "lowpass", "task": "rubric", "severity": "mid", "rating": 3, "text": "3"}
+{"id": "p257_007", "family": "lowpass", "task": "rubric", "severity": "worst", "rating": 3, "text": "3"}
+{"id": "p257_007", "family": "clip", "task": "2afc", "severity": "clean", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_007", "family": "clip", "task": "2afc", "severity": "clean", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_007", "family": "clip", "task": "2afc", "severity": "worst", "order": 0, "first_label": "CLEAN", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_007", "family": "clip", "task": "2afc", "severity": "worst", "order": 1, "first_label": "DISTORTED", "choice": "CLEAN", "text": "CLEAN."}
+{"id": "p257_007", "family": "clip", "task": "rubric", "severity": "clean", "rating": 4, "text": "4"}
+{"id": "p257_007", "family": "clip", "task": "rubric", "severity": "mid", "rating": 4, "text": "4"}
+{"id": "p257_007", "family": "clip", "task": "rubric", "severity": "worst", "rating": 4, "text": "4"}
