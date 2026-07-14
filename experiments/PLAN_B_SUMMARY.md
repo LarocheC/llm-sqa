@@ -4,7 +4,11 @@ Standalone summary of Plan B: fine-tuning the SQA-finetuned SALMONN audio LLM fr
 "lenient noise specialist" into a calibrated, multi-dimensional speech-quality rater.
 Full experiment log: [`FINDINGS.md`](FINDINGS.md). Code: [`planb/`](planb/).
 
-**Final model:** `experiments/results/planb/ckpt_stage2_v3/202606141722/checkpoint_best.pth`
+**Published model:** `experiments/results/planb/ckpt_stage2_open/` — on the HF Hub at
+[claroche1/salmonn-sqa-planb-v3](https://huggingface.co/claroche1/salmonn-sqa-planb-v3).
+
+**Every training input is public** (LibriTTS-R + MUSAN + OpenSLR SLR28 RIRs), so the whole
+pipeline reproduces end to end: `bash experiments/planb/train/run_open.sh`.
 
 ---
 
@@ -63,10 +67,10 @@ with `python experiments/stage0_encoder_probe.py`.
 
 ---
 
-## 3. v3 — the final training (what data, where, how)
+## 3. The training (what data, where, how)
 
-Pipeline: `planb/train/run_v3.sh` → generate corpus → Opus paraphrase → two-stage
-LoRA-SFT. Composition below is verified against `corpus_train_v3.jsonl`.
+Pipeline: `planb/train/run_open.sh` → generate corpus → LLM paraphrase → two-stage
+LoRA-SFT. Composition below is verified against `corpus_train_open.jsonl`.
 
 ### Clean speech (leakage-safe)
 - **Train:** LibriTTS-R **train-clean-100** — 4,000 clips (seed 1).
@@ -77,9 +81,9 @@ LoRA-SFT. Composition below is verified against `corpus_train_v3.jsonl`.
 ### Degradations (applied on-the-fly, known params; `planb/degradations.py`)
 A blind-spot-weighted sampler gives each clip 0–3 axes. Verified counts (4,000 train):
 
-| axis | how | v3 corpus |
+| axis | how | corpus |
 |---|---|---|
-| **reverb** | real measured RIRs (RT60+DRR) **+** synthetic exp-decay | 2,783 (1,934 real / 849 synthetic) |
+| **reverb** | real **SLR28** RIRs (measured RT60+DRR) **+** synthetic exp-decay | 2,138 (1,500 real / 638 synthetic) |
 | **noise** | real **MUSAN** (noise+music) **+** synthetic white/pink/brown, at known SNR | 512 (266 real / 246 synthetic) |
 | **codec** | real Opus/MP3 (torchaudio), scored into bandwidth via measured rolloff | 509 |
 | **bandwidth** | DSP Butterworth low-pass (cutoff) | (DSP) |
@@ -88,7 +92,7 @@ A blind-spot-weighted sampler gives each clip 0–3 axes. Verified counts (4,000
 | **loudness** | re-gain (dB) | (DSP) |
 | **clean** | no degradation | 373 |
 
-The real **and** synthetic noise/reverb mix was the v3 addition — to close the
+The real **and** synthetic noise/reverb mix closes the
 train/eval gap (the held-out sweep uses *synthetic* degradations the earlier corpus
 never trained on).
 
@@ -104,7 +108,7 @@ never trained on).
   **grounding-verified** (must name every degraded axis, no clean axis), sampled per
   clip. All 4,300 descriptions paraphrased, **0 template fallbacks**.
 
-### Two-stage LoRA-SFT (`planb/train/run_v3.sh`)
+### Two-stage LoRA-SFT (`planb/train/run_open.sh`)
 Trainable: Q-Former + speech→LLaMA projection + Vicuna-LoRA (r=8, α=28). **Frozen:**
 Whisper, BEATs, Vicuna base (Stage 0 said the encoders can stay frozen).
 
@@ -118,19 +122,49 @@ top of that (calibrate-then-describe).
 
 ---
 
-## 4. Results — v3 vs. the original (all five findings re-measured)
+## 4. Results — the published model vs. the original (all five findings re-measured)
 
 Held-out: synthetic degradation sweep on VoiceBank-DEMAND clean (training used real
 RIRs/MUSAN/codec on LibriTTS — disjoint speakers). Scripts: `planb/eval_compare.py`,
 `planb/eval_voicebank_v3.py`, `planb/eval_enhancement_v3.py`, `planb/eval_realnoise.py`.
 
-| # | Original finding | **v3** |
+| # | Original finding | **published (open)** |
 |---|---|---|
-| 1 | MOS↔SNR ρ 0.37, lenient | ρ **0.50**; penalizes low SNR; names noise 99% (low SNR) |
-| 2 | Calibration ρ 0.40–0.49 (outlier); **5 values floored at 2.5** | ρ **0.69–0.75** (inside the metrics' 0.72–0.82 band); **81 distinct values** (2.10–4.89) |
-| 3 | reverb **−0.11**, bw −0.39, clip −0.33 | reverb **−0.95**, bw −0.81, clip −0.83, noise −0.93 |
-| 4 | Enhancement: MOS +0.03, ρ(gain,PESQ)≈0 | MOS gain **+0.68** (76% of files), ρ **+0.22** |
+| 1 | MOS↔SNR ρ 0.37, lenient | ρ **0.46**; penalizes low SNR; names noise 98% (low SNR) |
+| 2 | Calibration ρ 0.40–0.49 (outlier); **5 values floored at 2.5** | ρ **0.65–0.71**; **63 distinct values** (1.90–4.89) |
+| 3 | reverb **−0.27**, bw −0.37, clip −0.48 | reverb **−0.80**, bw **−0.88**, clip −0.81, noise −0.93 |
+| 4 | Enhancement: MOS +0.03, ρ(gain,PESQ)≈0 | MOS gain **+1.05** (91% of files), ρ **+0.32** |
 | 5 | Acquiescence — leading yes/no → always "YES" | emits calibrated discriminative scores; failure mode N/A |
+
+**Real reverberation** (held-out real RIRs, PESQ as an independent reference):
+ρ(MOS, PESQ) **+0.63** — see below.
+
+## 5. The reverb result — and why the benchmark lied
+
+Swapping to public RIRs exposed a bug in the *severity map*, not just a path:
+
+- RT60 was **parsed from the filename**. It is now **measured** (Schroeder integration), so any
+  RIR corpus works.
+- The map was RT60-primary with a `DRR < −15 dB` correction — tuned to RIRs measured at a roughly
+  constant distance. On real rooms that is wrong: **ρ(PESQ, DRR) = +0.67 vs ρ(PESQ, RT60) = −0.27**,
+  and the −15 dB rule fired **0/240 times** (dead code). `score_reverb` now takes the **worse of the
+  RT60 band and the DRR band**; against PESQ the label improved from ρ ≈ +0.2 → **+0.709**.
+
+The two models then disagree about reverb — but *only about which kind*. Scored against PESQ, which
+knows nothing about either severity map:
+
+| reverb type | v3 (non-public RIRs) | **open** |
+|---|---|---|
+| **synthetic** exp-decay (what the sweep uses) | **+0.610** | +0.391 |
+| **real** RIRs, held out | +0.328 | **+0.632** |
+
+`synth_reverb` injects an explicit direct path, so synthetic reverb has an artificially **high DRR at
+every RT60** — exactly the case v3's RT60-only map is tuned for. The held-out sweep was measuring the
+artefact, not the ability. On **real rooms the open model tracks perceived quality ~2× better**.
+
+Honest trade: v3 remains better on the synthetic sweep, on clipping, and is slightly better
+calibrated on VoiceBank (ρ 0.69–0.75, 81 distinct MOS values). It is not reproducible from public
+data. Both are published.
 
 Per-dimension score sensitivity ρ(score,severity): noise −0.82, bandwidth −0.88,
 clipping −0.85, reverb −0.95. Output robustness: **0/108 degenerate** (original 20 + 6

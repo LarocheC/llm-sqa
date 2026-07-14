@@ -97,7 +97,8 @@ SLIDES = [
   "body":[B("plain","Turning a lenient noise specialist into a model that perceives, names, and scores"),
           B("plain","every common degradation — and emits a de-compressed, calibrated MOS."),
           B("dim",""),
-          B("dim","Clement Laroche · final model ckpt_stage2_v3 · LibriTTS-R → VoiceBank-DEMAND held-out")]},
+          B("good","Every training input is public — LibriTTS-R + MUSAN + OpenSLR SLR28 RIRs."),
+          B("dim","Clement Laroche · published model ckpt_stage2_open · VoiceBank-DEMAND held-out")]},
 
  # 2 the model
  {"title":"The model: SALMONN-7B, SQA-finetuned",
@@ -157,7 +158,7 @@ SLIDES = [
           B("bullet","The degradation reaches the LLM intact — the model was never taught to read it"),
           B("sub","(its read-out head was trained only on additive noise)."),
           B("dim","Each axis is probed one-at-a-time → proves per-axis detectability, not type-discrimination."),
-          B("dim","Discriminating WHICH degradation is the residual that v3's synthetic-type data fixes.")],
+          B("dim","Discriminating WHICH degradation is the residual that the synthetic-type data fixes.")],
   "image":os.path.join(PLB,"stage0_scatter.png")},
 
  # 8 data generation
@@ -169,14 +170,14 @@ SLIDES = [
           B("bullet","~740 unique profiles → one Opus 4.8 call each → grounding-verified prose"),
           B("bullet","All 4,300 descriptions paraphrased, 0 template fallbacks.")],
   "table":{"colw":[0.20,0.62,0.18],"cols":["axis","how","train"],
-           "rows":[["reverb","real measured RIRs + synth exp-decay","2,783"],
+           "rows":[["reverb","real SLR28 RIRs (Apache-2.0) + synthetic","2,138"],
                    ["noise","real MUSAN + synth white/pink/brown","512"],
                    ["codec","real Opus/MP3 → bandwidth","509"],
                    ["bandwidth","Butterworth low-pass","DSP"],
                    ["clipping / disc.","hard-clip / frame-drop","DSP"],
                    ["loudness","re-gain","DSP"],
                    ["clean","untouched","373"]]},
-  "footnote":"real + synthetic mix is the v3 addition — closes the train/eval gap (eval sweep uses synthetic types)."},
+  "footnote":"Every dataset is openly licensed (CC BY 4.0 / Apache-2.0), so the whole corpus regenerates from public data."},
 
  # 9 artefacts / severity map
  {"title":"Choice of artefacts & the severity map",
@@ -224,40 +225,52 @@ SLIDES = [
  # 12 results table
  {"title":"Results: all five findings re-measured",
   "body":[B("dim","Held-out synthetic degradation sweep on VoiceBank-DEMAND clean (disjoint speakers).")],
-  "table":{"colw":[0.05,0.40,0.55],"cols":["#","Original finding","v3"],
-           "rows":[["1","MOS↔SNR ρ 0.37, lenient","ρ 0.50; penalizes low SNR; names noise 99% (low SNR)"],
-                   ["2","ρ 0.40–0.49; 5 values floored","ρ 0.69–0.75 (in metrics' band); 81 distinct (2.10–4.89)"],
-                   ["3","reverb −0.11, bw −0.39, clip −0.33","reverb −0.95, bw −0.81, clip −0.83, noise −0.93"],
-                   ["4","Enhancement MOS +0.03, ρ≈0","MOS gain +0.68 (76% of files), ρ +0.22"],
+  "table":{"colw":[0.05,0.40,0.55],"cols":["#","Original finding","published (open)"],
+           "rows":[["1","MOS↔SNR ρ 0.37, lenient","ρ 0.46; penalizes low SNR; names noise 98% (low SNR)"],
+                   ["2","ρ 0.40–0.49; 5 values floored","ρ 0.65–0.71; 63 distinct values (1.90–4.89)"],
+                   ["3","reverb −0.27, bw −0.37, clip −0.48","reverb −0.80, bw −0.88, clip −0.81, noise −0.93"],
+                   ["4","Enhancement MOS +0.03, ρ≈0","MOS gain +1.05 (91% of files), ρ +0.32"],
                    ["5","Acquiescence → always YES","calibrated discriminative scores; N/A"]]},
-  "kpis":[("5→81","distinct MOS values"),("−.11→−.95","reverb ρ"),
-          ("0 / 108","degenerate outputs"),("90%","real-noise naming")]},
+  "kpis":[("5→63","distinct MOS values"),("+0.63","real-reverb ρ vs PESQ"),
+          ("0 / 108","degenerate outputs"),("+1.05","enhancement MOS gain")]},
 
  # 13 results calibration plots
  {"title":"Results: the MOS scale is rebuilt",
-  "body":[B("bullet","Left: MOS vs SNR — v3 cloud spreads the full range and slopes with SNR (was a flat band)."),
-          B("bullet","Right: v3 MOS vs metrics — continuous, rank-aligned (ρ 0.69–0.75); stripes gone.")],
-  "image_pair":[os.path.join(PLB,"mos_vs_snr_v3.png"), os.path.join(PLB,"mos_vs_neural_v3.png")]},
+  "body":[B("bullet","Left: MOS vs SNR — the cloud spreads the full range and slopes with SNR (was a flat band)."),
+          B("bullet","Right: MOS vs metrics — continuous, rank-aligned (ρ 0.65–0.71); the stripes are gone.")],
+  "image_pair":[os.path.join(PLB,"mos_vs_snr_open.png"), os.path.join(PLB,"mos_vs_neural_open.png")]},
 
  # 14 sweep + enhancement
  {"title":"Results: every axis now responds",
   "body":[B("bullet","Left: MOS vs severity — monotone downward everywhere, incl. the former reverb blind spot."),
-          B("bullet","Right: enhancement — v3 MOS rises with denoiser gain (usable as an enhancer evaluator).")],
-  "image_pair":[os.path.join(PLB,"degradation_sweep_v3.png"), os.path.join(PLB,"enhancement_blindness.png")]},
+          B("bullet","Right: enhancement — MOS rises with denoiser gain (+1.05, 91% of files): a usable enhancer evaluator.")],
+  "image_pair":[os.path.join(PLB,"degradation_sweep_open.png"), os.path.join(PLB,"enhancement_open.png")]},
 
  # 15 scale usage
  {"title":"Results: from a 5-rung ladder to a continuous meter",
   "body":[B("bullet","Original emitted a handful of MOS values, floored well above the bottom of the scale."),
-          B("good","v3 uses 81 distinct values spanning 2.10–4.89 — it meters quality instead of bucketing it."),
+          B("good","The published model uses 63 distinct values spanning 1.90–4.89 — it meters quality, not buckets."),
           B("dim","This de-compression lets rank-correlations climb into the band where the metrics agree.")],
-  "image":os.path.join(PLB,"mos_scale_usage.png")},
+  "image":os.path.join(PLB,"mos_scale_usage_open.png")},
 
- # 16 bottom line
+ # 16 THE reverb finding (real vs synthetic)
+ {"title":"The reverb result: why the benchmark lied",
+  "body":[B("h3","Two models, two reverb distributions"),
+          B("bullet","Scored against PESQ — an independent metric that knows nothing about either"),
+          B("sub","model's severity map — v3 and the open model disagree, but only about WHICH reverb."),
+          B("bullet","synth_reverb injects an explicit direct path → synthetic reverb has an artificially"),
+          B("sub","HIGH DRR at every RT60. v3 keys on RT60 alone, which is exactly how that sweep grades."),
+          B("good","On REAL rooms the open model tracks perceived quality ~2x better (+0.63 vs +0.33)."),
+          B("dim","Lesson: the held-out sweep was measuring the artefact, not the ability. The fix was a"),
+          B("dim","held-out REAL-RIR control (eval_realreverb.py) — now part of the repo.")],
+  "image":os.path.join(PLB,"reverb_real_vs_synthetic.png")},
+
+ # 17 bottom line
  {"title":"Bottom line",
-  "body":[B("plain","v3 turns a lenient noise specialist with a weak 5-value MOS into a calibrated rater:"),
-          B("bullet","MOS de-compressed (5→81), agreeing with PESQ/NISQA/DNSMOS as well as they agree with each other"),
+  "body":[B("plain","The fine-tune turns a lenient noise specialist with a weak 5-value MOS into a calibrated rater:"),
+          B("bullet","MOS de-compressed (5→63), rank-aligned with PESQ/NISQA/DNSMOS (ρ 0.65–0.71)"),
           B("bullet","Perceives and ranks every degradation type — incl. the former reverb blind spot"),
-          B("bullet","Tracks enhancement gain → usable as an automatic enhancer evaluator (it wasn't before)"),
+          B("bullet","Tracks enhancement gain (+1.05 MOS, 91% of files) → a usable automatic enhancer evaluator"),
           B("bullet","Names degradations in natural, grounded prose; 0 degenerate outputs"),
           B("dim","Per-dimension structured scores are the most reliable signal. The whole fix was data + targets —"),
           B("dim","encoders never unfrozen, validated up-front by the Stage 0 probe."),
