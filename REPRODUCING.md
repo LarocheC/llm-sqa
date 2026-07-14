@@ -6,8 +6,8 @@ committed to this repo. Only go further if you need to.
 | tier | what you can do | needs | time |
 |---|---|---|---|
 | **1** | re-run every analysis, regenerate every figure/table | nothing but the clone | ~1 min |
-| **2** | evaluate the v3 model on your own audio | GPU (~16 GB) + base models | ~30 min setup |
-| **3** | regenerate the corpus and retrain from scratch | 24 GB GPU + ~130 GB of datasets | ~3 h train |
+| **2** | evaluate the published model on your own audio | GPU (~16 GB) + base models | ~30 min setup |
+| **3** | retrain (download the corpus, or regenerate it) | 24 GB GPU (+54 GB datasets only if regenerating) | ~4 h train |
 
 Check where you stand at any point:
 
@@ -43,29 +43,33 @@ committed (~10 MB). So every number and plot in [`FINDINGS.md`](experiments/FIND
 
 ```bash
 # Findings #1 + #2: MOS-vs-SNR and calibration vs PESQ/NISQA/DNSMOS
-uv run python -m experiments.planb.eval_voicebank_v3 --analyze
+uv run python -m experiments.planb.eval_voicebank_v3 --analyze              # published model
+uv run python -m experiments.planb.eval_voicebank_v3 --analyze --model v3   # the older one
 
 # Finding #4: does the MOS track a denoiser's gain?
 uv run python -m experiments.planb.eval_enhancement_v3
+
+# every figure, from the committed data alone
+uv run python -m experiments.planb.make_plots
 ```
 
-Expected (this is the headline result):
+Expected for the published model (`--model open`):
 
 ```
-rho(MOS,SNR):  orig +0.372   v3 +0.504
-calibration:   orig +0.40..0.49   v3 +0.69..0.75    (metrics agree with each other at 0.72-0.82)
-MOS scale:     orig 5 distinct values (2.50-5.00)   v3 81 distinct values (2.10-4.89)
-enhancement:   orig +0.03 MOS (rho +0.03)           v3 +0.68 MOS (rho +0.22)
+rho(MOS,SNR):  orig +0.372            open +0.461
+calibration:   orig +0.40..0.49       open +0.65..0.71   (the metrics agree with each other at 0.72-0.82)
+MOS scale:     orig 5 values (2.50-5.00)   open 63 values (1.90-4.89)
+enhancement:   orig +0.03 MOS (rho +0.03)  open +1.05 MOS (rho +0.32)
 ```
 
 Rebuild the slide deck (`--extra deck`): `uv run python experiments/build_deck.py`
 
-## Tier 2 — evaluate the v3 model
+## Tier 2 — evaluate the published model
 
 ```bash
 bash scripts/setup_salmonn.sh              # SALMONN code + Whisper + Vicuna + NISQA
                                            #   (BEATs is a manual OneDrive download — the script tells you)
-uv run python scripts/fetch_checkpoints.py # the v3 weights, ~121 MB, from the HF Hub
+uv run python scripts/fetch_checkpoints.py # the published weights, ~121 MB, from the HF Hub
 uv run python -m experiments.planb.eval_compare --n-clips 6
 ```
 
@@ -139,10 +143,10 @@ Five steps, ~4 h on a single 24 GB GPU: generate corpus → paraphrase descripti
 manifests → Stage 1 (calibration, 2 epochs) → Stage 2 (reasoning, 4 epochs).
 
 > **You probably don't need an Anthropic API key.** The descriptions are LLM-paraphrased *per
-> degradation profile*, and that cache (`experiments/results/planb/paraphrase_pool.json`, 720
-> profiles / 3,161 paraphrases) **is committed**. A rerun with the same degradation taxonomy is a
-> pure cache hit and makes zero API calls. You only need a key if you change the taxonomy or the
-> severity map, i.e. if new profiles appear.
+> degradation profile*, and that cache (`experiments/results/planb/paraphrase_pool.json`, 1,029
+> profiles / 4,532 paraphrases) **is committed**. A rerun with the same degradation taxonomy is a
+> pure cache hit and makes **zero API calls** — verified with the key unset. You only need a key if
+> you change the taxonomy or the severity map, so that new profiles appear.
 
 ### Optional: the Stage-0 probe
 
@@ -167,5 +171,6 @@ Being honest about the edges:
 - **Exact bitwise retraining.** Corpus generation is seeded (`--seed 1` / `--seed 7`) and the
   degradation parameters are deterministic, but GPU nondeterminism means a retrain will land close
   to, not identical to, the published checkpoint.
-- **The v1/v2 corpora and checkpoints** are superseded and not shipped. `run_finetune.sh` (v1) and
-  `run_stage2_v2.sh` (v2) are kept for the record; `run_v3.sh` is the one that produced the result.
+- **The v1/v2 corpora and checkpoints** are superseded and not shipped. `run_finetune.sh` (v1),
+  `run_stage2_v2.sh` (v2) and `run_v3.sh` are kept for the record; **`run_open.sh`** produced the
+  published model.

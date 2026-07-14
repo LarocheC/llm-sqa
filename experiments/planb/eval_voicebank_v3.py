@@ -38,7 +38,8 @@ from experiments import config as cfg  # noqa: E402
 # --analyze runs on a bare clone with no model, no GPU and no datasets.
 
 RES = str(cfg.RESULTS_DIR)
-OUT = f"{RES}/planb/v3_voicebank.jsonl"
+# which model's cached inference to analyze; both ship with the repo
+OUT = f"{RES}/planb/open_voicebank.jsonl"
 TMP = str(cfg.work_dir("v3_vb"))
 # noise-environment vocabulary (issue #1: does it name the DEMAND noise type?)
 ENV_WORDS = ["outdoor", "chatter", "music", "traffic", "people", "talking", "babble",
@@ -50,7 +51,7 @@ def find_parquet():
     return str(cfg.voicebank_parquet())
 
 
-def infer(device="cuda:0"):
+def infer(out, device="cuda:0"):
     import salmonn_core as sc
     from experiments.planb.eval_compare import load_with_ckpt, parse_dim_scores
 
@@ -62,9 +63,9 @@ def infer(device="cuda:0"):
     sqa = load_with_ckpt(ckpt, device)
     rows = pq.read_table(find_parquet()).to_pylist()
     done = set()
-    if os.path.exists(OUT):
-        done = {json.loads(l)["id"] for l in open(OUT)}
-    fh = open(OUT, "a")
+    if os.path.exists(out):
+        done = {json.loads(l)["id"] for l in open(out)}
+    fh = open(out, "a")
     n = len(done)
     for r in rows:
         rid = r["id"]
@@ -83,7 +84,7 @@ def infer(device="cuda:0"):
         if n % 100 == 0:
             print(f"  {n}/{len(rows)}")
     fh.close()
-    print(f"done: {n} records -> {OUT}")
+    print(f"done: {n} records -> {out}")
 
 
 def desc_prose(text):
@@ -93,9 +94,9 @@ def desc_prose(text):
                     and not l.lower().strip().startswith("overall mos"))
 
 
-def analyze():
-    v3 = pd.DataFrame([json.loads(l) for l in open(OUT)])
-    v3 = v3.rename(columns={"mos": "mos_v3", "desc": "desc_v3"})
+def analyze(out, tag="open"):
+    v3 = pd.DataFrame([json.loads(l) for l in open(out)])
+    v3 = v3.rename(columns={"mos": "mos_v3", "desc": "desc_v3"})  # column name kept; row source is OUT
     snr = pd.DataFrame([{"id": r["id"], "snr_db": r["snr_db"], "mos_orig": r["mos"], "desc_orig": r["description"]}
                         for r in map(json.loads, open(f"{RES}/voicebank_sqa.jsonl")) if r["kind"] == "noisy"])
     obj = pd.read_csv(f"{RES}/objective_metrics.csv")
@@ -131,9 +132,9 @@ def analyze():
         ro = rho("mos_orig", col)[0]; rv = rho("mos_v3", col)[0]
         print(f"  {name:14} | {ro:>+9.3f} | {rv:>+9.3f}")
     print(f"  cross-agreement DNSMOS/NISQA/PESQ ~0.72-0.82 (unchanged baseline)")
-    for tag, col in [("orig", "mos_orig"), ("v3", "mos_v3")]:
+    for label, col in [("orig", "mos_orig"), (tag, "mos_v3")]:
         vals = df[col].dropna()
-        print(f"  {tag} scale: mean {vals.mean():.2f} ± {vals.std():.2f}, range {vals.min():.2f}-{vals.max():.2f}, "
+        print(f"  {label} scale: mean {vals.mean():.2f} ± {vals.std():.2f}, range {vals.min():.2f}-{vals.max():.2f}, "
               f"{vals.nunique()} distinct values")
     print()
 
@@ -145,7 +146,7 @@ def analyze():
         a.set_xlabel("SNR (dB)"); a.set_ylabel("MOS"); a.set_ylim(1, 5.2)
         a.set_title(f"{title}  (rho={rho(col,'snr_db')[0]:+.2f})")
     fig.suptitle("MOS vs SNR — VoiceBank-DEMAND noisy (824 files)")
-    fig.tight_layout(); fig.savefig(f"{RES}/planb/mos_vs_snr_v3.png", dpi=110); plt.close(fig)
+    fig.tight_layout(); fig.savefig(f"{RES}/planb/mos_vs_snr_{tag}.png", dpi=110); plt.close(fig)
 
     fig, ax = plt.subplots(1, 3, figsize=(15, 4.4))
     for a, col, title in zip(ax, ["dnsmos_ovrl", "nisqa_mos", "pesq"], ["DNSMOS OVRL", "NISQA MOS", "PESQ"]):
@@ -155,8 +156,8 @@ def analyze():
         a.set_xlabel(title); a.set_ylabel("v3 MOS")
         a.set_title(f"{title}  (rho={spearmanr(s[col], s.mos_v3)[0]:+.2f})")
     fig.suptitle("v3 MOS vs neural/objective metrics — VoiceBank-DEMAND noisy")
-    fig.tight_layout(); fig.savefig(f"{RES}/planb/mos_vs_neural_v3.png", dpi=110); plt.close(fig)
-    print(f"wrote {RES}/planb/mos_vs_snr_v3.png and mos_vs_neural_v3.png")
+    fig.tight_layout(); fig.savefig(f"{RES}/planb/mos_vs_neural_{tag}.png", dpi=110); plt.close(fig)
+    print(f"wrote {RES}/planb/mos_vs_snr_{tag}.png and mos_vs_neural_{tag}.png")
 
 
 if __name__ == "__main__":
@@ -164,8 +165,11 @@ if __name__ == "__main__":
     ap.add_argument("--infer", action="store_true")
     ap.add_argument("--analyze", action="store_true")
     ap.add_argument("--device", default="cuda:0")
+    ap.add_argument("--model", choices=["open", "v3"], default="open",
+                    help="which cached results to analyze (both are committed)")
     args = ap.parse_args()
+    OUT = f"{RES}/planb/{args.model}_voicebank.jsonl"
     if args.infer:
-        infer(args.device)
+        infer(OUT, args.device)
     if args.analyze:
-        analyze()
+        analyze(OUT, args.model)
