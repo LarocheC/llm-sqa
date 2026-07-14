@@ -83,7 +83,7 @@ A blind-spot-weighted sampler gives each clip 0–3 axes. Verified counts (4,000
 
 | axis | how | corpus |
 |---|---|---|
-| **reverb** | real **SLR28** RIRs (measured RT60+DRR) **+** synthetic exp-decay | 2,138 (1,500 real / 638 synthetic) |
+| **reverb** | **SLR28 simulated** RIRs (RT60+DRR measured from each response) **+** synthetic exp-decay | 2,138 (1,500 real / 638 synthetic) |
 | **noise** | real **MUSAN** (noise+music) **+** synthetic white/pink/brown, at known SNR | 512 (266 real / 246 synthetic) |
 | **codec** | real Opus/MP3 (torchaudio), scored into bandwidth via measured rolloff | 509 |
 | **bandwidth** | DSP Butterworth low-pass (cutoff) | (DSP) |
@@ -153,14 +153,19 @@ Swapping to public RIRs exposed a bug in the *severity map*, not just a path:
 The two models then disagree about reverb — but *only about which kind*. Scored against PESQ, which
 knows nothing about either severity map:
 
-| reverb type | v3 (non-public RIRs) | **open** |
+| reverb type | v3 | **open** |
 |---|---|---|
-| **synthetic** exp-decay (what the sweep uses) | **+0.610** | +0.391 |
-| **real** RIRs, held out | +0.328 | **+0.632** |
+| **synthetic** exp-decay (our generator; fixed artificial direct path) | **+0.610** | +0.391 |
+| **SLR28 simulated** (image-method, varying DRR) — *open trained on these* | +0.328 | **+0.632** |
+| **REAL measured** (RWCP / Aachen AIR / REVERB) — held out from **both** | +0.787 | **+0.827** |
 
 `synth_reverb` injects an explicit direct path, so synthetic reverb has an artificially **high DRR at
-every RT60** — exactly the case v3's RT60-only map is tuned for. The held-out sweep was measuring the
-artefact, not the ability. On **real rooms the open model tracks perceived quality ~2× better**.
+every RT60** — exactly the case v3's RT60-only map is tuned for. The held-out sweep was measuring that
+artefact, not the ability.
+
+On **genuinely measured rooms both models do well and `open` leads only modestly** (+0.83 vs +0.79).
+The large gap is on the *simulated* RIRs `open` trained on, so it partly reflects in-distribution
+advantage rather than generalization.
 
 Honest trade: v3 remains better on the synthetic sweep, on clipping, and is slightly better
 calibrated on VoiceBank (ρ 0.69–0.75, 81 distinct MOS values). It is not reproducible from public

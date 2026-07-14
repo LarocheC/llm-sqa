@@ -170,7 +170,7 @@ SLIDES = [
           B("bullet","~740 unique profiles → one Opus 4.8 call each → grounding-verified prose"),
           B("bullet","All 4,300 descriptions paraphrased, 0 template fallbacks.")],
   "table":{"colw":[0.20,0.62,0.18],"cols":["axis","how","train"],
-           "rows":[["reverb","real SLR28 RIRs (Apache-2.0) + synthetic","2,138"],
+           "rows":[["reverb","SLR28 simulated RIRs (Apache-2.0) + synthetic","2,138"],
                    ["noise","real MUSAN + synth white/pink/brown","512"],
                    ["codec","real Opus/MP3 → bandwidth","509"],
                    ["bandwidth","Butterworth low-pass","DSP"],
@@ -231,7 +231,7 @@ SLIDES = [
                    ["3","reverb −0.27, bw −0.37, clip −0.48","reverb −0.80, bw −0.88, clip −0.81, noise −0.93"],
                    ["4","Enhancement MOS +0.03, ρ≈0","MOS gain +1.05 (91% of files), ρ +0.32"],
                    ["5","Acquiescence → always YES","calibrated discriminative scores; N/A"]]},
-  "kpis":[("5→63","distinct MOS values"),("+0.63","real-reverb ρ vs PESQ"),
+  "kpis":[("5→63","distinct MOS values"),("+0.83","measured-reverb ρ vs PESQ"),
           ("0 / 108","degenerate outputs"),("+1.05","enhancement MOS gain")]},
 
  # 13 results calibration plots
@@ -253,16 +253,18 @@ SLIDES = [
           B("dim","This de-compression lets rank-correlations climb into the band where the metrics agree.")],
   "image":os.path.join(PLB,"mos_scale_usage_open.png")},
 
- # 16 THE reverb finding (real vs synthetic)
- {"title":"The reverb result: why the benchmark lied",
-  "body":[B("h3","Two models, two reverb distributions"),
-          B("bullet","Scored against PESQ — an independent metric that knows nothing about either"),
-          B("sub","model's severity map — v3 and the open model disagree, but only about WHICH reverb."),
-          B("bullet","synth_reverb injects an explicit direct path → synthetic reverb has an artificially"),
-          B("sub","HIGH DRR at every RT60. v3 keys on RT60 alone, which is exactly how that sweep grades."),
-          B("good","On REAL rooms the open model tracks perceived quality ~2x better (+0.63 vs +0.33)."),
-          B("dim","Lesson: the held-out sweep was measuring the artefact, not the ability. The fix was a"),
-          B("dim","held-out REAL-RIR control (eval_realreverb.py) — now part of the repo.")],
+ # 16 THE reverb finding (three distributions)
+ {"title":"The reverb result: the benchmark was measuring an artefact",
+  "body":[B("h3","Scored against PESQ — which knows nothing about either severity map"),
+          B("bullet","synth_reverb injects an explicit direct path → our synthetic reverb has an"),
+          B("sub","artificially HIGH DRR at every RT60. v3 keys on RT60 alone — exactly how that"),
+          B("sub","sweep grades severity. So the sweep flattered v3 and penalized open."),
+          B("good","On REAL measured rooms both models do well; open leads modestly (0.83 vs 0.79)."),
+          B("warn","The big gap is on SLR28 SIMULATED RIRs — which open trained on. That is an"),
+          B("sub","in-distribution advantage, not generalization. Reporting it as 'real rooms'"),
+          B("sub","would have been an overclaim (an earlier draft of this control made exactly that"),
+          B("sub","mistake: the pool is 60k simulated vs 320 measured, so uniform sampling drew none)."),
+          B("dim","Lesson: name your test distribution precisely — eval_realreverb.py now asserts it.")],
   "image":os.path.join(PLB,"reverb_real_vs_synthetic.png")},
 
  # 17 bottom line

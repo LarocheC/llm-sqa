@@ -30,10 +30,12 @@ parameters ("calibrate, then describe"):
 | 4 | Enhancement: MOS **+0.03**, ρ ≈ 0 | MOS gain **+1.05** (91% of files), ρ **+0.32** |
 | 5 | Degenerate JSON under OOD input | **0/108 degenerate** |
 
-Real reverberation (held-out real RIRs, PESQ as an independent reference): ρ(MOS, PESQ) **+0.63**.
+Real reverberation (held-out **measured** RIRs, PESQ as an independent reference): ρ(MOS, PESQ)
+**+0.83** (vs +0.79 for the older model).
 **Every training input is public** — LibriTTS-R + MUSAN + OpenSLR SLR28 RIRs — so the whole pipeline
 reproduces end to end. See [FINDINGS.md](experiments/FINDINGS.md) for the honest `open` vs `v3`
-trade-off (v3 scores higher on a *synthetic* reverb sweep; `open` wins ~2× on *real* rooms).
+trade-off (v3 scores higher on the *synthetic* reverb sweep; on *measured* rooms the two are close,
+with `open` modestly ahead).
 
 📄 [PLAN_B_SUMMARY.md](experiments/PLAN_B_SUMMARY.md) · [FINDINGS.md](experiments/FINDINGS.md) (full log) ·
 🤗 [model weights](https://huggingface.co/claroche1/salmonn-sqa-planb-v3) ·

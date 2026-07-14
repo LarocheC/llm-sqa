@@ -99,31 +99,41 @@ def reverb_real_vs_synthetic():
     an artificial direct path (high DRR at every RT60), which is exactly what v3's
     RT60-only map is tuned for.
     """
-    log = R / "realreverb.log"
-    real = {}
-    if log.exists():
-        txt = open(log).read()
-        for m in re.finditer(r"^(v3|open)\s+([+-]?\d\.\d+)\s+([+-]?\d\.\d+)", txt, re.M):
-            real[m.group(1)] = float(m.group(2))
-    synth = {"v3": 0.610, "open": 0.391}   # from the PESQ-referenced sweep (see FINDINGS)
-    if not real:
-        print("  ! realreverb.log not found — skipping reverb figure")
+    def parse(log):
+        out = {}
+        if log.exists():
+            for m in re.finditer(r"^(v3|open)\s+([+-]?\d\.\d+)\s+([+-]?\d\.\d+)",
+                                 open(log).read(), re.M):
+                out[m.group(1)] = float(m.group(2))
+        return out
+
+    sim = parse(R / "realreverb.log")                 # SLR28 image-method RIRs
+    real = parse(R / "realreverb_measured.log")       # RWCP / Aachen AIR / REVERB
+    synth = {"v3": 0.610, "open": 0.391}              # our exp-decay generator (see FINDINGS)
+    if not (sim and real):
+        print("  ! reverb control logs missing — skipping reverb figure")
         return
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.2))
-    x = np.arange(2); w = 0.35
-    ax.bar(x - w/2, [synth["v3"], real["v3"]], w, color=V3, label="v3 (non-public RIRs)")
-    ax.bar(x + w/2, [synth["open"], real["open"]], w, color=OPEN, label="open (public RIRs)")
-    for i, (a_, b_) in enumerate([(synth["v3"], synth["open"]), (real["v3"], real["open"])]):
-        ax.text(i - w/2, a_ + .015, f"{a_:.2f}", ha="center", fontsize=10)
-        ax.text(i + w/2, b_ + .015, f"{b_:.2f}", ha="center", fontsize=10)
-    ax.set_xticks(x)
-    ax.set_xticklabels(["SYNTHETIC reverb\n(exp-decay: artificial direct path)",
-                        "REAL reverb\n(held-out room impulse responses)"])
+    groups = [
+        ("SYNTHETIC\n(our exp-decay generator:\nfixed artificial direct path)", synth),
+        ("SLR28 SIMULATED\n(image-method, varying DRR)\n— open TRAINED on these", sim),
+        ("REAL MEASURED\n(RWCP / AIR / REVERB)\n— held out from BOTH", real),
+    ]
+    fig, ax = plt.subplots(figsize=(9.6, 4.6))
+    x = np.arange(len(groups)); w = 0.35
+    ax.bar(x - w/2, [g[1]["v3"] for g in groups], w, color=V3, label="v3 (non-public RIRs)")
+    ax.bar(x + w/2, [g[1]["open"] for g in groups], w, color=OPEN, label="open (public RIRs)")
+    for i, g in enumerate(groups):
+        ax.text(i - w/2, g[1]["v3"] + .015, f"{g[1]['v3']:.2f}", ha="center", fontsize=10)
+        ax.text(i + w/2, g[1]["open"] + .015, f"{g[1]['open']:.2f}", ha="center", fontsize=10)
+    ax.set_xticks(x); ax.set_xticklabels([g[0] for g in groups], fontsize=8.5)
     ax.set_ylabel("ρ(model MOS, PESQ)")
     ax.set_title("Reverb: which model agrees with an independent quality metric?")
-    ax.legend(loc="upper center", ncol=2, fontsize=9, framealpha=.95)
-    ax.grid(alpha=.2, axis="y"); ax.set_ylim(0, .95)
+    ax.legend(loc="upper left", fontsize=9, framealpha=.95)
+    ax.grid(alpha=.2, axis="y"); ax.set_ylim(0, 1.05)
+    fig.text(0.5, 0.005, "On genuinely measured rooms both models do well and open leads only "
+             "modestly; the large gap is on the simulated RIRs it trained on.",
+             ha="center", fontsize=8.5, style="italic", color="#555")
     fig.tight_layout(); fig.savefig(R / "reverb_real_vs_synthetic.png", dpi=120); plt.close(fig)
 
 

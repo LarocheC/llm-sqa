@@ -33,17 +33,35 @@ from experiments import config as cfg  # noqa: E402
 from experiments.planb import degradations as D  # noqa: E402
 
 
-def held_out_rirs(n, train_seed=1):
-    """Real RIRs the OPEN model never trained on.
+def is_real_rir(path):
+    """A genuinely MEASURED room response, not an image-method simulation.
 
-    The training bank is drawn by load_rir_bank() from an rng seeded with the corpus
-    seed, so replaying that seed reproduces it exactly; everything else is held out.
-    (v3 trained on a different RIR corpus entirely, so all of these are unseen by it too.)
+    SLR28 ships ~60k simulated RIRs and only ~320 real ones (RWCP / Aachen AIR / REVERB
+    challenge). Sampling the pool uniformly therefore returns simulated responses almost
+    surely — which is exactly how an earlier version of this control ended up testing
+    simulated RIRs while calling them "real". Filter explicitly.
+    """
+    b = os.path.basename(path).lower()
+    return "simulated_rirs" not in path and b.startswith(("air", "rwcp", "rvb"))
+
+
+def held_out_rirs(n, train_seed=1, real_only=True):
+    """RIRs neither model trained on.
+
+    The training bank is drawn by load_rir_bank() from an rng seeded with the corpus seed,
+    so replaying that seed reproduces it exactly; everything else is held out. (v3 trained
+    on a different RIR corpus entirely, so all of these are unseen by it too.)
+
+    With real_only=True this restricts to genuinely measured RIRs — the honest test of
+    whether the model generalizes to real rooms.
     """
     train_bank = {f for _, f in D.load_rir_bank(np.random.default_rng(train_seed), cache=cfg.RIR_CACHE)}
     cache = json.load(open(cfg.RIR_CACHE))
     pool = [(v[0], v[1], f) for f, v in cache.items()
-            if isinstance(v, list) and v[0] is not None and f not in train_bank]
+            if isinstance(v, list) and v[0] is not None and f not in train_bank
+            and (not real_only or is_real_rir(f))]
+    if real_only and not pool:
+        raise SystemExit("no real (measured) RIRs in the cache — check SQA_RIR_ROOT")
     # spread across the reverb severity range so the correlation has something to grip
     from experiments.planb.targets import score_reverb
     by_s = {}
@@ -66,17 +84,20 @@ def main():
     ap.add_argument("--name-a", default="v3")
     ap.add_argument("--name-b", default="open")
     ap.add_argument("--n-clips", type=int, default=6)
-    ap.add_argument("--n-rirs", type=int, default=8)
+    ap.add_argument("--n-rirs", type=int, default=12)
+    ap.add_argument("--simulated", action="store_true", help="use simulated RIRs instead of measured ones")
     ap.add_argument("--device", default="cuda:0")
     args = ap.parse_args()
 
     import salmonn_core as sc
     from experiments.planb.eval_compare import load_with_ckpt, pick_ids
 
-    rirs, n_train = held_out_rirs(args.n_rirs)
-    print(f"held-out real RIRs: {len(rirs)}  (excluded {n_train} used in training)")
+    rirs, n_train = held_out_rirs(args.n_rirs, real_only=not args.simulated)
+    kind = "SIMULATED" if args.simulated else "REAL (measured: RWCP / Aachen AIR / REVERB)"
+    print(f"held-out {kind} RIRs: {len(rirs)}  (excluded {n_train} used in training)")
     for rt, dr, f in rirs:
         print(f"   RT60 {rt:.2f}  DRR {dr:+6.1f} dB   {os.path.basename(f)}")
+    assert args.simulated or all(is_real_rir(f) for _, _, f in rirs), "non-measured RIR leaked in"
 
     rows = pq.read_table(str(cfg.voicebank_parquet())).to_pylist()
     by_id = {r["id"]: r for r in rows}

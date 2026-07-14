@@ -460,18 +460,27 @@ map — the two models disagree depending on *which kind of reverb* you test:
 
 | reverb type | v3 | **open** |
 |---|---|---|
-| **synthetic** exponential-decay (what the sweep uses) | **+0.610** | +0.391 |
-| **real** RIRs, held out (`eval_realreverb.py`) | +0.328 | **+0.632** |
+| **synthetic** exp-decay (our generator; fixed artificial direct path) | **+0.610** | +0.391 |
+| **SLR28 simulated** (image-method, varying DRR) — *open trained on these* | +0.328 | **+0.632** |
+| **REAL measured** (RWCP / Aachen AIR / REVERB) — held out from **both** | +0.787 | **+0.827** |
 
 `synth_reverb` injects an explicit direct path, so synthetic reverb has an artificially **high DRR at
-every RT60**. v3, trained on uniformly-distant RIRs, keys almost entirely on RT60 — which is exactly
-how the synthetic sweep grades severity, so it scores well there. `open` is calibrated to real rooms
-where DRR varies, and on real RIRs it tracks perceived quality **~2× better**.
+every RT60**. v3, trained on uniformly-distant RIRs, keys almost entirely on RT60 — exactly how that
+sweep grades severity — so it scores well there and `open` does not.
 
-**Conclusion:** `open` is better where it matters (real rooms, enhancement, bandwidth, naming) and is
-the only variant reproducible from public data. v3 remains better on the *synthetic* sweep, on
+**On genuinely measured rooms the two models are close, and `open` leads only modestly (+0.83 vs
++0.79).** The large gap is on SLR28's *simulated* RIRs, which `open` trained on — that comparison
+largely measures an in-distribution advantage, not generalization. v3 is *not* bad at reverb on real
+rooms. Both models do markedly better on real RIRs than on either synthetic kind.
+
+(An earlier version of this control sampled the RIR pool uniformly. SLR28 is ~60k simulated vs ~320
+measured responses, so it drew only simulated RIRs while calling them "real", and reported a ~2×
+gap. `eval_realreverb.py` now filters to measured RIRs explicitly and asserts on it.)
+
+**Conclusion:** `open` is modestly better on real rooms, clearly better on enhancement, bandwidth and
+naming, and is the only variant reproducible from public data. v3 remains better on the *synthetic* sweep, on
 clipping, and is slightly better calibrated on VoiceBank-DEMAND. Both are published; the trade is
 documented rather than hidden.
 
-Caveat: the real-reverb control is 48 clips × 8 held-out RIRs — enough to establish the ~2× gap, not
-to pin its exact size.
+Caveat: the measured-RIR control is 96 clips × 12 held-out RIRs. Enough to show `open` is not worse
+on real rooms; not enough to call a +0.04 difference decisive.
