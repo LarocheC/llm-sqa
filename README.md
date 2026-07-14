@@ -22,13 +22,18 @@ in the LLM's learned **read-out**, not the architecture — so the fix was **dat
 the encoders left frozen. Two-stage LoRA-SFT on a 4,000-clip corpus with *known* degradation
 parameters ("calibrate, then describe"):
 
-| # | Original | **v3** |
+| # | Original | **published model** |
 |---|---|---|
-| 1 | MOS↔SNR ρ 0.37 | **ρ 0.50**; names noise 99% at low SNR |
-| 2 | Calibration ρ 0.40–0.49; **5 distinct MOS values** | **ρ 0.69–0.75** (inside the metrics' own 0.72–0.82 band); **81 distinct values** |
-| 3 | reverb **−0.11**, bandwidth −0.39, clipping −0.33 | reverb **−0.95**, bandwidth −0.81, clipping −0.83 |
-| 4 | Enhancement: MOS **+0.03**, ρ ≈ 0 | MOS gain **+0.68** (76% of files), ρ **+0.22** |
+| 1 | MOS↔SNR ρ 0.37 | **ρ 0.46**; names noise 98% at low SNR |
+| 2 | Calibration ρ 0.40–0.49; **5 distinct MOS values** | **ρ 0.65–0.71**; **63 distinct values** |
+| 3 | reverb −0.27, bandwidth −0.37, clipping −0.48 | reverb −0.80, **bandwidth −0.88**, clipping −0.81 |
+| 4 | Enhancement: MOS **+0.03**, ρ ≈ 0 | MOS gain **+1.05** (91% of files), ρ **+0.32** |
 | 5 | Degenerate JSON under OOD input | **0/108 degenerate** |
+
+Real reverberation (held-out real RIRs, PESQ as an independent reference): ρ(MOS, PESQ) **+0.63**.
+**Every training input is public** — LibriTTS-R + MUSAN + OpenSLR SLR28 RIRs — so the whole pipeline
+reproduces end to end. See [FINDINGS.md](experiments/FINDINGS.md) for the honest `open` vs `v3`
+trade-off (v3 scores higher on a *synthetic* reverb sweep; `open` wins ~2× on *real* rooms).
 
 📄 [PLAN_B_SUMMARY.md](experiments/PLAN_B_SUMMARY.md) · [FINDINGS.md](experiments/FINDINGS.md) (full log) ·
 🤗 [model weights](https://huggingface.co/claroche1/salmonn-sqa-planb-v3) ·
@@ -50,7 +55,7 @@ To **evaluate the model** on your own audio (needs a GPU):
 
 ```bash
 bash scripts/setup_salmonn.sh                # SALMONN + Whisper/Vicuna/BEATs + NISQA
-uv run python scripts/fetch_checkpoints.py   # v3 weights (~121 MB) from the HF Hub
+uv run python scripts/fetch_checkpoints.py   # published weights (~121 MB) from the HF Hub
 uv run python -m experiments.planb.eval_compare --n-clips 6
 ```
 
@@ -132,7 +137,7 @@ steering) and the Plan B fine-tune that fixed them are logged in
 |---|---|
 | `experiments/config.py` | **every path** the experiments use, env-var driven — no hardcoded paths |
 | `experiments/planb/` | corpus generation, the severity map + targets, the Opus paraphrase, evals |
-| `experiments/planb/train/` | the two-stage LoRA-SFT (`run_v3.sh` is the one that produced the result) |
+| `experiments/planb/train/` | the two-stage LoRA-SFT (`run_open.sh` is the one that produced the published model) |
 | `experiments/results/` | committed artifacts: plots, v3 corpora, paraphrase cache, eval outputs |
 
 ## How the assessment is prompted

@@ -95,3 +95,10 @@ experiments/results/*smoke*.jsonl
 *.key
 .env
 GPU_SCALING_CASE.md
+
+# the openly reproducible corpus (public inputs only) + its eval outputs
+!experiments/results/planb/corpus_train_open.jsonl
+!experiments/results/planb/corpus_val_open.jsonl
+!experiments/results/planb/rir_rt60_cache.json
+experiments/results/planb/corpus_train_open_pre.jsonl
+experiments/results/planb/corpus_val_open_pre.jsonl

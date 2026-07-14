@@ -8,18 +8,18 @@
 | family | orig | Plan B |
 |---|---|---|
 | noise | -0.90 | -0.93 |
-| lowpass | -0.37 | -0.81 |
-| clip | -0.48 | -0.83 |
-| reverb | -0.27 | -0.95 |
+| lowpass | -0.37 | -0.88 |
+| clip | -0.48 | -0.81 |
+| reverb | -0.27 | -0.80 |
 
 ## rho(dimension score, severity) — Plan B per-dimension scores
 
 | family -> dim | Plan B |
 |---|---|
-| noise -> noise | -0.82 |
-| lowpass -> bandwidth | -0.88 |
-| clip -> clipping | -0.85 |
-| reverb -> reverberation | -0.95 |
+| noise -> noise | -0.83 |
+| lowpass -> bandwidth | -0.94 |
+| clip -> clipping | -0.83 |
+| reverb -> reverberation | -0.71 |
 
 ## naming rate — does the natural-language *description* name the degradation?
 (Plan B's score block is excluded so this measures prose, not the dimension labels.)
@@ -27,8 +27,8 @@
 | family | orig | Plan B |
 |---|---|---|
 | noise | 97% | 100% |
-| lowpass | 0% | 71% |
-| clip | 79% | 75% |
+| lowpass | 0% | 83% |
+| clip | 79% | 92% |
 | reverb | 8% | 100% |
 
 ## output robustness

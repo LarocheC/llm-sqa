@@ -209,7 +209,7 @@ def main():
     results_dir = os.path.dirname(args.out)
     rng = np.random.default_rng(args.seed)
 
-    rir_bank = D.load_rir_bank(rng)
+    rir_bank = D.load_rir_bank(rng, cache=cfg.RIR_CACHE)
     print(f"RIR bank: {len(rir_bank)} RIRs, RT60 {rir_bank[0][0]}–{rir_bank[-1][0]}")
     noise_bank = D.load_noise_bank(args.musan_root)
     print(f"noise bank: {len(noise_bank)} MUSAN files"

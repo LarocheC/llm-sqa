@@ -404,3 +404,74 @@ v3 is usable as an enhancer evaluator; orig was not.
 leading yes/no prompts always returning "YES" (no discriminative power). v3 doesn't
 answer yes/no; it emits calibrated per-dimension scores that *do* discriminate
 (reverb dim ρ −0.95, etc.), so the acquiescence failure mode is moot.
+
+---
+
+# The openly reproducible model (`open`) — public data end to end
+
+The v3 result depended on a **non-public RIR set**, so nobody else could regenerate the corpus.
+`open` rebuilds the reverberation axis on **OpenSLR SLR28** (`RIRS_NOISES`, Apache-2.0), making every
+input public: LibriTTS-R (CC BY 4.0) + MUSAN (CC BY 4.0) + SLR28 + VoiceBank-DEMAND.
+
+Published as the headline model: https://huggingface.co/claroche1/salmonn-sqa-planb-v3
+
+## It was not a path swap — the severity map was wrong for real rooms
+
+Two things broke when the RIR corpus changed, and both were load-bearing:
+
+1. **RT60 was parsed from the filename.** Replaced with a **measurement** (Schroeder backward
+   integration, `degradations.measure_rt60`), so the pipeline now works with any RIR corpus.
+2. **The reverb severity map was RT60-primary with a `DRR < −15 dB` correction.** That rule was tuned
+   to a set of RIRs measured at a roughly *constant* (distant) mic position. On a corpus where mic
+   distance varies it is simply wrong:
+
+   | | ρ with PESQ |
+   |---|---|
+   | RT60 | **−0.27** |
+   | DRR  | **+0.67** |
+
+   DRR predicts perceived degradation *far* better than RT60 — a long-RT60 room still sounds fairly
+   dry when the mic is close. The old `DRR < −15` rule fired **0/240 times** on SLR28 (dead code).
+
+   `score_reverb` now takes the **worse of the RT60 band and the DRR band**. Against PESQ, the label
+   itself improved from ρ ≈ **+0.13…+0.24 → +0.709**.
+
+   The "any applied RIR floors reverb at 4, never 5" rule was **re-verified, not assumed**: convolving
+   clean speech with every RIR and measuring PESQ, *none* came out transparent — even the most benign
+   (RT60 0.05 s, DRR +18 dB) scores PESQ 3.75. So it stands.
+
+## Results: `open` vs `v3` — an honest trade, not a clean win
+
+| | orig | v3 | **open** |
+|---|---|---|---|
+| MOS↔SNR ρ | +0.37 | **+0.50** | +0.46 |
+| Calibration ρ (PESQ/NISQA/DNSMOS) | 0.40–0.49 | **0.69–0.75** | 0.65–0.71 |
+| MOS scale (distinct values) | 5 | **81** | 63 |
+| Enhancement: MOS gain / ρ | +0.03 / +0.03 | +0.68 / +0.22 | **+1.05 / +0.32** (91% of files) |
+| Degradation sweep: bandwidth | −0.37 | −0.81 | **−0.88** |
+| Degradation sweep: reverb | −0.27 | **−0.95** | −0.80 |
+| Naming: bandwidth / clipping | 0% / 79% | 71% / 75% | **83% / 92%** |
+| Degenerate outputs | 20/108 | **0/108** | **0/108** |
+
+### The reverb result is a distribution story, and the synthetic sweep is misleading
+
+Scored against **PESQ** — an independent reference that knows nothing about either model's severity
+map — the two models disagree depending on *which kind of reverb* you test:
+
+| reverb type | v3 | **open** |
+|---|---|---|
+| **synthetic** exponential-decay (what the sweep uses) | **+0.610** | +0.391 |
+| **real** RIRs, held out (`eval_realreverb.py`) | +0.328 | **+0.632** |
+
+`synth_reverb` injects an explicit direct path, so synthetic reverb has an artificially **high DRR at
+every RT60**. v3, trained on uniformly-distant RIRs, keys almost entirely on RT60 — which is exactly
+how the synthetic sweep grades severity, so it scores well there. `open` is calibrated to real rooms
+where DRR varies, and on real RIRs it tracks perceived quality **~2× better**.
+
+**Conclusion:** `open` is better where it matters (real rooms, enhancement, bandwidth, naming) and is
+the only variant reproducible from public data. v3 remains better on the *synthetic* sweep, on
+clipping, and is slightly better calibrated on VoiceBank-DEMAND. Both are published; the trade is
+documented rather than hidden.
+
+Caveat: the real-reverb control is 48 clips × 8 held-out RIRs — enough to establish the ~2× gap, not
+to pin its exact size.

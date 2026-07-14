@@ -88,12 +88,14 @@ print(sc.clean_output(sc.generate_sqa(sqa, prompt=prompt, wav_path="your.wav")))
 
 ### Datasets you must supply
 
-| dataset | used for | size | where |
-|---|---|---|---|
-| LibriTTS-R (`train-clean-100`, `dev-clean`) | the clean speech the corpus is built from | ~30 GB | https://www.openslr.org/141/ |
-| MUSAN | real noise (noise + music) | ~23 GB | https://www.openslr.org/17/ |
-| measured RIRs | real reverberation (RT60 + DRR) | ~84 GB | supply your own (see note) |
-| VoiceBank-DEMAND-16k | the held-out eval set | ~1 GB | `huggingface-cli download JacobLinCool/VoiceBank-DEMAND-16k --repo-type dataset` |
+**Every input is public and freely downloadable.**
+
+| dataset | used for | size | licence | where |
+|---|---|---|---|---|
+| LibriTTS-R (`train-clean-100`, `dev-clean`) | the clean speech the corpus is built from | ~30 GB | CC BY 4.0 | https://www.openslr.org/141/ |
+| MUSAN | real noise (noise + music) | ~23 GB | CC BY 4.0 | https://www.openslr.org/17/ |
+| OpenSLR SLR28 (`RIRS_NOISES`) | reverberation (RT60 + DRR) | ~1.3 GB | Apache-2.0 | `bash scripts/fetch_rirs.sh` |
+| VoiceBank-DEMAND-16k | the held-out eval set | ~1 GB | CC BY 4.0 | `huggingface-cli download JacobLinCool/VoiceBank-DEMAND-16k --repo-type dataset` |
 
 Point the code at them (defaults assume `~/data/<name>`):
 
@@ -102,8 +104,12 @@ export SQA_DATA_ROOT=/path/to/data          # the simple case: everything under 
 # or override individually:
 export SQA_LIBRITTS_ROOT=/path/to/LibriTTS_R
 export SQA_MUSAN_ROOT=/path/to/musan
-export SQA_RIR_ROOT=/path/to/rirs
+export SQA_RIR_ROOT=/path/to/rirs_open
 ```
+
+> **Any RIR corpus works.** RT60 and DRR are *measured* from each impulse response
+> (Schroeder backward integration), not parsed from filenames, so the pipeline is not tied
+> to SLR28 — point `SQA_RIR_ROOT` at any set of RIR wavs.
 
 Every path in the pipeline resolves through [`experiments/config.py`](experiments/config.py) —
 there are no hardcoded paths. The full list of `SQA_*` variables is documented at the top of that file.
@@ -111,11 +117,11 @@ there are no hardcoded paths. The full list of `SQA_*` variables is documented a
 ### Run it
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...          # see the note below — often NOT needed
-bash experiments/planb/train/run_v3.sh
+bash scripts/fetch_rirs.sh                   # the RIR bank (Apache-2.0, ~1.3 GB)
+bash experiments/planb/train/run_open.sh     # corpus -> paraphrase -> two-stage LoRA-SFT
 ```
 
-Five steps, ~3 h on a single 24 GB GPU: generate corpus → paraphrase descriptions → build
+Five steps, ~4 h on a single 24 GB GPU: generate corpus → paraphrase descriptions → build
 manifests → Stage 1 (calibration, 2 epochs) → Stage 2 (reasoning, 4 epochs).
 
 > **You probably don't need an Anthropic API key.** The descriptions are LLM-paraphrased *per
