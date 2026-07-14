@@ -39,6 +39,7 @@ with `open` modestly ahead).
 
 📄 [PLAN_B_SUMMARY.md](experiments/PLAN_B_SUMMARY.md) · [FINDINGS.md](experiments/FINDINGS.md) (full log) ·
 🤗 [model weights](https://huggingface.co/claroche1/salmonn-sqa-planb-v3) ·
+📚 [SFT dataset](https://huggingface.co/datasets/claroche1/sqa-degraded) ·
 🔁 [REPRODUCING.md](REPRODUCING.md)
 
 ## Reproduce it

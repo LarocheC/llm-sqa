@@ -84,9 +84,23 @@ prompt = json.load(open("experiments/planb/train/test_prompt_planb.json"))["sqa_
 print(sc.clean_output(sc.generate_sqa(sqa, prompt=prompt, wav_path="your.wav")))
 ```
 
-## Tier 3 — regenerate the corpus and retrain
+## Tier 3 — retrain
 
-### Datasets you must supply
+### Shortcut: download the corpus instead of regenerating it
+
+The SFT corpus is published, so you can skip the 54 GB of source datasets entirely:
+
+```python
+from datasets import load_dataset
+ds = load_dataset("claroche1/sqa-degraded")     # ~570 MB, 4,000 train / 300 val
+```
+
+**https://huggingface.co/datasets/claroche1/sqa-degraded** — degraded audio + per-dimension scores +
+`target_text` + the exact degradation parameters. CC BY 4.0 (derivative of LibriTTS-R + MUSAN +
+SLR28). Only regenerate from scratch (below) if you want to *change* the degradation taxonomy or the
+severity map.
+
+### Datasets you must supply (only if regenerating the corpus)
 
 **Every input is public and freely downloadable.**
 
