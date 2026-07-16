@@ -31,10 +31,25 @@
 | clip | 79% | 92% |
 | reverb | 8% | 100% |
 
+## uncertainty — cluster-bootstrapped by clip
+
+CIs resample clips (the independent unit), not rows. The paired delta is rho(planb) - rho(orig) on common support; negative = Plan B tracks severity better. `p` is bootstrap-derived (two-sided).
+
+| family | orig rho [95% CI] | Plan B rho [95% CI] | paired delta [95% CI] | p | verdict |
+|---|---|---|---|---|---|
+| noise | -0.90 [-0.95, -0.83] | -0.93 [-0.97, -0.88] | -0.03 [-0.12, +0.04] | 0.467 | n.s. |
+| lowpass | -0.37 [-0.78, +0.26] | -0.88 [-0.94, -0.86] | -0.51 [-1.13, -0.12] | 0.000 | **significant** |
+| clip | -0.48 [-0.77, -0.06] | -0.81 [-0.95, -0.73] | -0.33 [-0.71, -0.11] | 0.005 | **significant** |
+| reverb | -0.27 [-0.45, -0.11] | -0.80 [-0.86, -0.78] | -0.52 [-0.70, -0.37] | 0.000 | **significant** |
+
+> WARNING: only 6 independent clusters — percentile-bootstrap CIs are approximate and likely too narrow. Treat as descriptive, not inferential; the real fix is more speakers/clips, not a different interval.
+
 ## output robustness
 
 - orig: 20/108 degenerate, 6/108 unparsed MOS
 - Plan B: 0/108 degenerate, 0/108 unparsed MOS
+
+- The 6 unparsed-MOS rows are dropped from orig's correlations but not from Plan B's, so the two columns above are NOT over the same clips. The paired deltas (--bootstrap) restrict to common support and are the comparable numbers.
 
 ## reading
 

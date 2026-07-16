@@ -161,14 +161,62 @@ def analyze(recs, tag):
     return out
 
 
+def bootstrap_section(recs, n_boot):
+    """Per-family rho with cluster-bootstrap CIs + the paired orig->planb delta.
+
+    Two corrections vs the point-estimate table above:
+      - resamples CLIPS, not rows (rows within a clip are not independent);
+      - computes the delta on the clips BOTH models parsed, so the dropped
+        unparseable-orig rows can't flatter the comparison.
+    """
+    from experiments.planb.stats import spearman_ci, paired_delta_ci, fmt, n_clusters_warning
+
+    L = ["", "## uncertainty — cluster-bootstrapped by clip\n",
+         "CIs resample clips (the independent unit), not rows. The paired delta is "
+         "rho(planb) - rho(orig) on common support; negative = Plan B tracks severity "
+         "better. `p` is bootstrap-derived (two-sided).\n",
+         "| family | orig rho [95% CI] | Plan B rho [95% CI] | paired delta [95% CI] | p | verdict |",
+         "|---|---|---|---|---|---|"]
+    kmin = 99
+    for fam in FAMILIES:
+        stat = {}
+        for tag in ("orig", "planb"):
+            sub = [r for r in recs if r["tag"] == tag and r["family"] in (fam, "clean")]
+            stat[tag] = spearman_ci([r["severity"] for r in sub], [r["mos"] for r in sub],
+                                    cluster=[r["id"] for r in sub], n_boot=n_boot)
+        o = {(r["id"], r["level"]): r for r in recs if r["tag"] == "orig" and r["family"] in (fam, "clean")}
+        p = {(r["id"], r["level"]): r for r in recs if r["tag"] == "planb" and r["family"] in (fam, "clean")}
+        keys = sorted(set(o) & set(p))
+        d = paired_delta_ci([o[k]["severity"] for k in keys], [o[k]["mos"] for k in keys],
+                            [p[k]["mos"] for k in keys], cluster=[k[0] for k in keys],
+                            n_boot=n_boot)
+        kmin = min(kmin, d["n_clusters"])
+        sig = np.isfinite(d["lo"]) and (d["lo"] > 0 or d["hi"] < 0)
+        L.append(
+            f"| {fam} | {stat['orig']['rho']:+.2f} [{stat['orig']['lo']:+.2f}, {stat['orig']['hi']:+.2f}] "
+            f"| {stat['planb']['rho']:+.2f} [{stat['planb']['lo']:+.2f}, {stat['planb']['hi']:+.2f}] "
+            f"| {d['delta']:+.2f} [{d['lo']:+.2f}, {d['hi']:+.2f}] | {d['p']:.3f} "
+            f"| {'**significant**' if sig else 'n.s.'} |")
+    w = n_clusters_warning(kmin)
+    if w:
+        L += ["", f"> {w}"]
+    return L
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--planb-ckpt", required=True)
+    ap.add_argument("--planb-ckpt", help="required unless --from-jsonl (which runs no inference)")
     ap.add_argument("--orig-ckpt", default=None, help="default = the released SQA ckpt in inference_config")
     ap.add_argument("--n-clips", type=int, default=6)
     ap.add_argument("--device", default="cuda:0")
     ap.add_argument("--from-jsonl", action="store_true", help="re-analyze the saved eval_compare.jsonl, no inference")
+    ap.add_argument("--bootstrap", action="store_true",
+                    help="add cluster-bootstrap CIs (by clip) and a paired orig-vs-planb "
+                         "delta on common support. No inference needed; pairs with --from-jsonl.")
+    ap.add_argument("--n-boot", type=int, default=4000)
     args = ap.parse_args()
+    if not args.from_jsonl and not args.planb_ckpt:
+        ap.error("--planb-ckpt is required unless --from-jsonl is passed")
 
     os.makedirs(TMP, exist_ok=True)
     os.makedirs(RESULTS, exist_ok=True)
@@ -216,10 +264,15 @@ def main():
           "| family | orig | Plan B |", "|---|---|---|"]
     for fam in FAMILIES:
         L.append(f"| {fam} | {orig[fam]['naming']:.0%} | {planb[fam]['naming']:.0%} |")
+    if args.bootstrap:
+        L += bootstrap_section(recs, args.n_boot)
     od, om, on = health("orig"); pd_, pm, pn = health("planb")
     L += ["", "## output robustness\n",
           f"- orig: {od}/{on} degenerate, {om}/{on} unparsed MOS",
           f"- Plan B: {pd_}/{pn} degenerate, {pm}/{pn} unparsed MOS\n",
+          f"- The {om} unparsed-MOS rows are dropped from orig's correlations but not from "
+          f"Plan B's, so the two columns above are NOT over the same clips. The paired "
+          f"deltas (--bootstrap) restrict to common support and are the comparable numbers.\n",
           "## reading\n",
           "- **MOS now ranks every axis**, including the former blind spots reverb and "
           "bandwidth (and clipping), while noise stays strong — the de-specialization worked.",
@@ -234,7 +287,8 @@ def main():
     with open(f"{RESULTS}/EVAL_COMPARE.md", "w") as f:
         f.write(report)
     print("\n" + report)
-    print(f"\nWrote {RESULTS}/EVAL_COMPARE.md and eval_compare.jsonl")
+    wrote = "EVAL_COMPARE.md" if args.from_jsonl else "EVAL_COMPARE.md and eval_compare.jsonl"
+    print(f"\nWrote {RESULTS}/{wrote}")
 
 
 if __name__ == "__main__":

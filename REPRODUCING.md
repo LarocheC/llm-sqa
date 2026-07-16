@@ -76,6 +76,31 @@ uv run python -m experiments.planb.eval_compare --n-clips 6
 Weights: **https://huggingface.co/claroche1/salmonn-sqa-planb-v3** (Q-Former + projection + LoRA
 only; the base models come from `setup_salmonn.sh`).
 
+### Uncertainty on the sweep (no GPU needed)
+
+The sweep's raw per-clip outputs are committed, so the correlations can be re-analyzed
+with confidence intervals without re-running inference:
+
+```bash
+uv run python -m experiments.planb.eval_compare --from-jsonl --bootstrap
+```
+
+This adds a cluster-bootstrap CI per family and a **paired** orig-vs-Plan-B delta. Two
+things it corrects, both of which matter for how the headline numbers should be read:
+
+- It resamples **clips**, not rows. The sweep is 108 rows but only **6 clips, all from
+  VoiceBank-DEMAND speaker `p232`** — rows within a clip are not independent, so a
+  row-level interval would be several times too narrow.
+- It computes the delta on **common support**. The original model emits 6 unparseable
+  MOS values that are dropped from its correlation but not Plan B's, so the raw
+  before/after columns are not over the same clips.
+
+Result on the committed sweep: the reverb, bandwidth and clipping gains hold up
+(paired delta CIs exclude 0), while **noise is not significant** (-0.03 [-0.12, +0.04])
+— consistent with the original already being a noise specialist. With only 6 clusters
+these CIs are approximate and biased narrow; they bound the claim, they don't establish
+it. More speakers is the fix.
+
 Score one file of your own:
 
 ```python
