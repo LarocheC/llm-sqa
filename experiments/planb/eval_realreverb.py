@@ -9,8 +9,15 @@ reverb has an artificially high DRR at every RT60. A model calibrated on real ro
 therefore cannot tell "worse at reverb" apart from "calibrated to real rooms".
 
 Method: convolve held-out clean speech with REAL RIRs that were *not* in the training
-bank, then correlate each model's MOS against PESQ — an independent reference that
-knows nothing about either model's severity map.
+bank, then correlate each model's MOS against PESQ.
+
+CAVEAT — PESQ is NOT an independent reference here. PESQ->MOS is one of the three
+metrics fused into the 30% metric term of the training target (see targets.py
+fuse_metric_mos), so both models were partly supervised toward it. What is held out
+in this control is the *RIRs*, not the metric. Read rho(MOS, PESQ) as "agreement with
+a metric this model was partly trained on, on unseen rooms" — not as external
+validation. The metric-independent evidence for the reverb repair is the severity
+ordering vs RT60/DRR below, and the forced-choice probe.
 
   uv run python -m experiments.planb.eval_realreverb --ckpt-a <v3> --ckpt-b <open>
 """
@@ -103,7 +110,7 @@ def main():
     by_id = {r["id"]: r for r in rows}
     ids = pick_ids(rows, 50)[: args.n_clips]
 
-    # build the reverberant clips + their PESQ (independent reference)
+    # build the reverberant clips + their PESQ (partly inside the training target)
     clips = []
     for rid in ids:
         clean, _ = sf.read(io.BytesIO(by_id[rid]["clean"]["bytes"]))
@@ -153,7 +160,7 @@ def main():
     P = [c[3] for c in clips]
     RT = [c[1] for c in clips]
     print("\n" + "=" * 62)
-    print("REAL-REVERB CONTROL — held-out real RIRs, PESQ as independent reference")
+    print("REAL-REVERB CONTROL — held-out real RIRs (PESQ is NOT held out: it is in the target)")
     print("=" * 62)
     print(f"{'model':8} {'rho(MOS, PESQ)':>16} {'rho(revScore, PESQ)':>21}")
     for name in (args.name_a, args.name_b):
@@ -163,7 +170,8 @@ def main():
         okr = [i for i, v in enumerate(rev) if v is not None]
         r2 = spearmanr([rev[i] for i in okr], [P[i] for i in okr])[0] if len(okr) > 5 else float("nan")
         print(f"{name:8} {r1:+16.3f} {r2:+21.3f}")
-    print("\n(higher = the model's judgement agrees better with an independent quality metric)")
+    print("\n(higher = agrees better with PESQ on unseen rooms; PESQ is 1 of 3 metrics in the")
+    print(" training target, so this is proxy agreement, not external validation)")
     print(f"{'model':8} {'rho(MOS, RT60)':>16}")
     for name in (args.name_a, args.name_b):
         mos, _ = results[name]

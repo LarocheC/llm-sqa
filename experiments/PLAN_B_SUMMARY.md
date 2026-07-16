@@ -1,8 +1,20 @@
 # Plan B — Summary: de-specializing SALMONN-SQA
 
 Standalone summary of Plan B: fine-tuning the SQA-finetuned SALMONN audio LLM from a
-"lenient noise specialist" into a calibrated, multi-dimensional speech-quality rater.
+"lenient noise specialist" into a proxy-calibrated, multi-dimensional speech-quality rater.
 Full experiment log: [`FINDINGS.md`](FINDINGS.md). Code: [`planb/`](planb/).
+
+> **Read "calibrated" as "proxy-calibrated" throughout.** The training target is 70%
+> parameter-anchored and 30% PESQ/NISQA/DNSMOS, and the calibration numbers below are measured
+> against those same three metrics — so that part of the result is partly built into the
+> supervision. **No human MOS is used anywhere in this pipeline**, and nothing here has been
+> validated against human perception. The metric-independent evidence is the severity ordering
+> against known synthesis parameters, the forced-choice probe, and the Stage 0 encoder probe.
+> The base checkpoint (Wang et al., ICASSP 2025, arXiv:2409.16644) *was* trained on human MOS
+> (BVCC/NISQA/SOMOS), so the foundation is human-anchored even though this fine-tune is not.
+> Controlled sweeps are n=6 clips from a single speaker (`p232`); see the CI table in
+> `results/planb/EVAL_COMPARE.md` (`eval_compare --from-jsonl --bootstrap`) for which deltas
+> actually survive — the noise gain does not.
 
 **Published model:** `experiments/results/planb/ckpt_stage2_open/` — on the HF Hub at
 [claroche1/salmonn-sqa-planb-v3](https://huggingface.co/claroche1/salmonn-sqa-planb-v3).
@@ -136,8 +148,9 @@ RIRs/MUSAN/codec on LibriTTS — disjoint speakers). Scripts: `planb/eval_compar
 | 4 | Enhancement: MOS +0.03, ρ(gain,PESQ)≈0 | MOS gain **+1.05** (91% of files), ρ **+0.32** |
 | 5 | Acquiescence — leading yes/no → always "YES" | emits calibrated discriminative scores; failure mode N/A |
 
-**Real reverberation** (held-out real RIRs, PESQ as an independent reference):
-ρ(MOS, PESQ) **+0.63** — see below.
+**Real reverberation** (held-out real RIRs): ρ(MOS, PESQ) **+0.63** — see below. The *rooms*
+are held out; PESQ is not. PESQ→MOS is one of the three metrics in the 30% metric term of the
+training target, so this measures proxy agreement on unseen rooms, not external validation.
 
 ## 5. The reverb result — and why the benchmark lied
 

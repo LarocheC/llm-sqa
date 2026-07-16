@@ -128,7 +128,7 @@ def reverb_real_vs_synthetic():
         ax.text(i + w/2, g[1]["open"] + .015, f"{g[1]['open']:.2f}", ha="center", fontsize=10)
     ax.set_xticks(x); ax.set_xticklabels([g[0] for g in groups], fontsize=8.5)
     ax.set_ylabel("ρ(model MOS, PESQ)")
-    ax.set_title("Reverb: which model agrees with an independent quality metric?")
+    ax.set_title("Reverb: which model agrees better with PESQ on unseen rooms?")
     ax.legend(loc="upper left", fontsize=9, framealpha=.95)
     ax.grid(alpha=.2, axis="y"); ax.set_ylim(0, 1.05)
     fig.text(0.5, 0.005, "On genuinely measured rooms both models do well and open leads only "

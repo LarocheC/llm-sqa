@@ -455,8 +455,10 @@ Two things broke when the RIR corpus changed, and both were load-bearing:
 
 ### The reverb result is a distribution story, and the synthetic sweep is misleading
 
-Scored against **PESQ** — an independent reference that knows nothing about either model's severity
-map — the two models disagree depending on *which kind of reverb* you test:
+Scored against **PESQ** — which is *not* independent: PESQ→MOS is one of the three metrics fused
+into the 30% metric term of the training target, so both models were partly supervised toward it.
+What is held out here is the RIRs, not the metric. With that caveat, the two models disagree
+depending on *which kind of reverb* you test:
 
 | reverb type | v3 | **open** |
 |---|---|---|
