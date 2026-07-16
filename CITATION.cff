@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use this work, please cite it as below."
-title: "SALMONN-SQA Plan B: de-specializing an audio LLM into a calibrated, multi-dimensional speech-quality rater"
+message: "If you use this work, please cite it as below, AND cite Wang et al. (2024) for the base checkpoint this work fine-tunes."
+title: "SALMONN-SQA Plan B: de-specializing an audio LLM into a proxy-calibrated, multi-dimensional speech-quality rater"
 authors:
   - family-names: Laroche
     given-names: Clement
@@ -13,3 +13,63 @@ keywords:
   - audio language model
   - MOS
   - LoRA
+references:
+  - type: conference-paper
+    title: "Enabling Auditory Large Language Models for Automatic Speech Quality Evaluation"
+    authors:
+      - family-names: Wang
+        given-names: Siyin
+      - family-names: Yu
+        given-names: Wenyi
+      - family-names: Yang
+        given-names: Yudong
+      - family-names: Tang
+        given-names: Changli
+      - family-names: Li
+        given-names: Yixuan
+      - family-names: Zhuang
+        given-names: Jimin
+      - family-names: Chen
+        given-names: Xianzhao
+      - family-names: Tian
+        given-names: Xiaohai
+      - family-names: Zhang
+        given-names: Jun
+      - family-names: Sun
+        given-names: Guangzhi
+      - family-names: Lu
+        given-names: Lu
+      - family-names: Wang
+        given-names: Yuxuan
+      - family-names: Zhang
+        given-names: Chao
+    collection-title: "ICASSP 2025 - 2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)"
+    year: 2025
+    doi: "10.1109/ICASSP49660.2025.10890590"
+    url: "https://arxiv.org/abs/2409.16644"
+    notes: "Source of the finetuned_SALMONN_7B_2.pth SQA checkpoint (tsinghua-ee/Speech_Quality_Assessment) that this work continues training from."
+  - type: conference-paper
+    title: "SALMONN: Towards Generic Hearing Abilities for Large Language Models"
+    authors:
+      - family-names: Tang
+        given-names: Changli
+      - family-names: Yu
+        given-names: Wenyi
+      - family-names: Sun
+        given-names: Guangzhi
+      - family-names: Chen
+        given-names: Xianzhao
+      - family-names: Tan
+        given-names: Tian
+      - family-names: Li
+        given-names: Wei
+      - family-names: Lu
+        given-names: Lu
+      - family-names: Ma
+        given-names: Zejun
+      - family-names: Zhang
+        given-names: Chao
+    collection-title: "The Twelfth International Conference on Learning Representations (ICLR)"
+    year: 2024
+    url: "https://arxiv.org/abs/2310.13289"
+    notes: "The underlying audio LLM architecture."

@@ -68,8 +68,29 @@ beyond 5 discrete values.
 
 ## Data lineage
 
-- Train: `corpus_train_v3.jsonl` (4,000 clips, LibriTTS-R **train-clean-100**),
-  wavs under `$SQA_CORPUS_WAV_DIR/wav_train_v3`.
-- Val: `corpus_val_v3.jsonl` (300 clips, LibriTTS-R **dev-clean** — disjoint speakers),
-  wavs under `$SQA_CORPUS_WAV_DIR/wav_val_v3`.
-- Both leakage-safe vs the VoiceBank-DEMAND eval set (no VCTK speakers).
+Two corpus lineages exist. **`_open` is the published one** — it is what `run_open.sh`
+trains, what `build_hf_dataset.py` publishes, and what the released checkpoint and every
+headline number correspond to. The `_v3` lineage is the earlier model, kept for the
+v3-vs-open comparisons; it built its reverb axis on a synthetic RIR generator whose
+injected direct path inflated DRR (see `eval_realreverb.py`).
+
+| run script | train corpus | val corpus | wav dir | status |
+|---|---|---|---|---|
+| `run_open.sh` | `corpus_train_open.jsonl` | `corpus_val_open.jsonl` | `$SQA_CORPUS_WAV_DIR/wav_{train,val}_open` | **published** |
+| `run_v3.sh` | `corpus_train_v3.jsonl` | `corpus_val_v3.jsonl` | `$SQA_CORPUS_WAV_DIR/wav_{train,val}_v3` | superseded |
+
+Both: 4,000 train clips from LibriTTS-R **train-clean-100**, 300 val clips from
+**dev-clean** (disjoint speakers), and both leakage-safe vs the VoiceBank-DEMAND eval
+set (no VCTK speakers).
+
+Composition of the published corpus (`corpus_train_open.jsonl`): MOS spans 1.69–4.85,
+~51% in [2,3), none above 4.85; 10.1% clean / 45.3% one degradation / 31.8% two /
+12.8% three; all 4,000 rows carry all three metrics (`mos_source = param+metric(3)`).
+Per-axis clean (score-5) rates: noise 87.3%, discontinuity 85.3%, loudness 85.3%,
+clipping 82.5%, bandwidth 68.5%, reverberation 46.5%.
+
+> **Reproducibility note.** Description/paraphrase variant selection is seeded per clip
+> via `targets.id_rng` (crc32). Before that fix the seed came from Python's `hash()`,
+> which is salted per process — so the *shipped* corpora cannot be byte-reproduced by
+> re-running the generator, and are committed for exactly that reason. Regeneration is
+> deterministic from here on, but will not reproduce the shipped description draw.

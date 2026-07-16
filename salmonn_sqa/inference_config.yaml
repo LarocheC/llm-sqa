@@ -36,8 +36,10 @@ model:
 # is kept (it is what this checkpoint was validated with and is numerically
 # stable). Sampling (do_sample=True) was tried but this model emits occasional
 # inf/nan logits that crash multinomial sampling. max_new_tokens is raised to
-# 400 so descriptions don't truncate mid-sentence; a mild repetition_penalty
-# discourages the model from looping.
+# 400 so descriptions don't truncate mid-sentence. temperature/top_p are inert
+# under do_sample: False, and repetition_penalty is 1.0 (= disabled): both are
+# left at their defaults to document that this checkpoint was validated without
+# them, not because they are doing anything.
 generate:
   max_new_tokens: 400
   num_beams: 4
