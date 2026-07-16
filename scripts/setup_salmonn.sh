@@ -13,6 +13,14 @@ MODELS_DIR="$ROOT/salmonn_sqa/models"
 CKPT_DIR="$ROOT/salmonn_sqa/ckpt"
 PATCH="$ROOT/salmonn_sqa/patches/local-salmonn.patch"
 
+# Pinned upstream commit on bytedance/SALMONN's 'salmonn' branch. Every result in
+# this repo was produced against this tree. The branch is mutable, so tracking it
+# would silently change the training/inference harness (incl. LoRA target modules
+# and checkpoint selection, which live upstream, not in our config) out from under
+# published numbers. Override only to test a newer upstream:
+#   SALMONN_COMMIT=<sha> scripts/setup_salmonn.sh
+SALMONN_COMMIT="${SALMONN_COMMIT:-a58bba799a2eec05df09df102553f5c623808c12}"
+
 WHISPER_DIR="$MODELS_DIR/whisper-large-v2"
 VICUNA_DIR="$MODELS_DIR/vicuna-7b-v1_5"
 BEATS_PT="$MODELS_DIR/BEATs_iter3_plus_AS2M_finetuned_on_AS2M_cpt2.pt"
@@ -20,13 +28,18 @@ SQA_CKPT="$CKPT_DIR/finetuned_SALMONN_7B_2.pth"
 
 mkdir -p "$MODELS_DIR" "$CKPT_DIR"
 
-# ---- 1. Clone SALMONN code (inference 'salmonn' branch) ----
+# ---- 1. Clone SALMONN code, pinned to $SALMONN_COMMIT ----
 if [[ ! -d "$SALMONN_DIR/.git" ]]; then
   echo ">> Cloning bytedance/SALMONN ..."
   git clone https://github.com/bytedance/SALMONN.git "$SALMONN_DIR"
 fi
 git -C "$SALMONN_DIR" fetch --all --quiet
-git -C "$SALMONN_DIR" checkout salmonn
+if ! git -C "$SALMONN_DIR" cat-file -e "$SALMONN_COMMIT^{commit}" 2>/dev/null; then
+  echo "!! Pinned SALMONN commit $SALMONN_COMMIT not found upstream (force-push or rewrite?)." >&2
+  exit 1
+fi
+echo ">> Checking out pinned SALMONN commit ${SALMONN_COMMIT:0:12} ..."
+git -C "$SALMONN_DIR" checkout --quiet --detach "$SALMONN_COMMIT"
 
 # ---- 2. Apply our local patches (EOFError handler + dependency bumps) ----
 if [[ -f "$PATCH" ]]; then
@@ -39,7 +52,15 @@ if [[ -f "$PATCH" ]]; then
 fi
 
 # ---- 3. Download model assets ----
-# SALMONN-7B SQA-finetuned LoRA checkpoint (~363 MB)
+# SALMONN-7B SQA-finetuned LoRA checkpoint (~363 MB).
+#
+# PROVENANCE: this is the model from Wang et al., "Enabling Auditory Large Language
+# Models for Automatic Speech Quality Evaluation", ICASSP 2025 (arXiv:2409.16644).
+# It is already SFT'd on HUMAN MOS (BVCC + NISQA + SOMOS, + VoxSim), so everything
+# this repo builds on top of it inherits ~100k human ratings — the pipeline is not
+# human-label-free, only the fine-tune stage is. Cite that paper if you use it.
+# The HF repo ships no model card; the checkpoint<->paper link is documented on the
+# 'speech_quality_assessment' branch of github.com/bytedance/SALMONN.
 if [[ ! -f "$SQA_CKPT" ]]; then
   echo ">> Downloading finetuned SALMONN-7B SQA checkpoint ..."
   python - "$CKPT_DIR" <<'PY'
