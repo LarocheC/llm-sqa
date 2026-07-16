@@ -18,9 +18,22 @@ Three pieces, in the scoping doc's "calibrate-then-describe" order:
      common 1-5 axis, de-compressed (never copy a single 5-level teacher).
 """
 
+import zlib
+
 import numpy as np
 
 DIMS = ["noise", "reverberation", "bandwidth", "clipping", "discontinuity", "loudness"]
+
+
+def id_rng(clip_id):
+    """Per-clip RNG seeded by a STABLE hash of the clip id.
+
+    Python's built-in hash() is salted per process (PYTHONHASHSEED), so seeding
+    from it makes description/paraphrase selection irreproducible across runs —
+    regenerating the corpus would silently emit different text than the shipped
+    corpus. crc32 is stable across processes, machines and versions.
+    """
+    return np.random.default_rng(zlib.crc32(str(clip_id).encode("utf-8")))
 
 # The instruction the model is trained to answer (Plan B schema).
 PLANB_PROMPT = (

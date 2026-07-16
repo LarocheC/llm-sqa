@@ -34,7 +34,7 @@ def main():
         for line in open(args.inp):
             r = json.loads(line)
             ctx = {"noise_type": (r["params"].get("noise") or {}).get("noise_type")}
-            rng = np.random.default_rng(hash(r["id"]) % 2**32)
+            rng = T.id_rng(r["id"])
             desc = T.describe(r["scores"], rng, ctx)
             r["target_text"] = T.build_target(r["scores"], r["mos"], desc)
             out.write(json.dumps(r) + "\n")

@@ -28,8 +28,6 @@ import ast
 import json
 import os
 
-import numpy as np
-
 from experiments.planb import targets as T
 
 SEV_WORD = {4: "slight", 3: "moderate", 2: "strong", 1: "severe"}
@@ -169,7 +167,7 @@ def main():
         for r in recs:
             key = profile_key(r)
             variants = pool.get(key) or []
-            rng = np.random.default_rng(hash(r["id"]) % 2**32)
+            rng = T.id_rng(r["id"])
             if variants:
                 desc = variants[int(rng.integers(len(variants)))]
                 n_llm += 1

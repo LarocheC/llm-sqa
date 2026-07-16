@@ -262,7 +262,7 @@ def main():
     for r in records:
         r["prompt"] = T.PLANB_PROMPT
         ctx = {"noise_type": (r["params"].get("noise") or {}).get("noise_type")}
-        desc = T.describe(r["scores"], np.random.default_rng(hash(r["id"]) % 2**32), ctx)
+        desc = T.describe(r["scores"], T.id_rng(r["id"]), ctx)
         r["target_text"] = T.build_target(r["scores"], r["mos"], desc)
 
     with open(args.out, "w") as f:
